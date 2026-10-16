@@ -35,7 +35,7 @@ function CameraRig({ progress, focus, reducedMotion }: Omit<Props, 'onContextLos
 }
 
 export function SceneCanvas({ progress, focus, reducedMotion, onContextLost }: Props) {
-  const [tier, setTier] = useState<Tier>('desktop')
+  const [tier, setTier] = useState<Tier | null>(null)
   const cleanup = useRef<(() => void) | null>(null)
   const lostRef = useRef(onContextLost)
 
@@ -51,6 +51,8 @@ export function SceneCanvas({ progress, focus, reducedMotion, onContextLost }: P
   }, [])
 
   useEffect(() => () => cleanup.current?.(), [])
+
+  if (!tier) return null
 
   return (
     <Canvas

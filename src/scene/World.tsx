@@ -1,13 +1,13 @@
 'use client'
 
-import { useMemo, useRef } from 'react'
+import { memo, useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { mulberry32 } from './rng'
 import { sceneConfig, type Tier } from './sceneConfig'
 import { groundHeight, NOTEBOOK_POS } from './terrain'
 
-function Sky() {
+const Sky = memo(function Sky() {
   const texture = useMemo(() => {
     const c = document.createElement('canvas')
     c.width = 2
@@ -24,24 +24,25 @@ function Sky() {
     tex.colorSpace = THREE.SRGBColorSpace
     return tex
   }, [])
+  useEffect(() => () => texture.dispose(), [texture])
   return (
     <>
       <primitive object={texture} attach="background" />
       <fog attach="fog" args={['#dff0fb', 40, 130]} />
     </>
   )
-}
+})
 
-function Sun() {
+const Sun = memo(function Sun() {
   return (
     <mesh position={[40, 70, -110]}>
       <icosahedronGeometry args={[6, 1]} />
       <meshBasicMaterial color="#fff6b8" fog={false} />
     </mesh>
   )
-}
+})
 
-function Ground({ segments }: { segments: number }) {
+const Ground = memo(function Ground({ segments }: { segments: number }) {
   const geometry = useMemo(() => {
     const geo = new THREE.PlaneGeometry(260, 260, segments, segments)
     geo.rotateX(-Math.PI / 2)
@@ -59,14 +60,46 @@ function Ground({ segments }: { segments: number }) {
     geo.computeVertexNormals()
     return geo
   }, [segments])
+  useEffect(() => () => geometry.dispose(), [geometry])
   return (
     <mesh geometry={geometry}>
       <meshLambertMaterial vertexColors flatShading />
     </mesh>
   )
+})
+
+interface InstanceItem {
+  pos: [number, number, number]
+  scale: number
+  color: string
 }
 
-function Trees({ count }: { count: number }) {
+// One draw call for many copies of a shared geometry and material.
+function Instanced({ items, children }: { items: InstanceItem[]; children: React.ReactNode }) {
+  const ref = useRef<THREE.InstancedMesh>(null)
+  useLayoutEffect(() => {
+    const mesh = ref.current
+    if (!mesh) return
+    const dummy = new THREE.Object3D()
+    const color = new THREE.Color()
+    items.forEach((it, i) => {
+      dummy.position.set(it.pos[0], it.pos[1], it.pos[2])
+      dummy.scale.setScalar(it.scale)
+      dummy.updateMatrix()
+      mesh.setMatrixAt(i, dummy.matrix)
+      mesh.setColorAt(i, color.set(it.color))
+    })
+    mesh.instanceMatrix.needsUpdate = true
+    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true
+  }, [items])
+  return (
+    <instancedMesh key={items.length} ref={ref} args={[undefined, undefined, items.length]} frustumCulled={false}>
+      {children}
+    </instancedMesh>
+  )
+}
+
+const Trees = memo(function Trees({ count }: { count: number }) {
   const trees = useMemo(() => {
     const rand = mulberry32(202)
     const out: { x: number; y: number; z: number; s: number; pink: boolean }[] = []
@@ -80,46 +113,55 @@ function Trees({ count }: { count: number }) {
     }
     return out
   }, [count])
+  const trunks = useMemo(
+    () => trees.map((t) => ({ pos: [t.x, t.y + t.s, t.z] as [number, number, number], scale: t.s, color: '#ffffff' })),
+    [trees],
+  )
+  const canopies = useMemo(
+    () =>
+      trees.map((t) => ({
+        pos: [t.x, t.y + 3.2 * t.s, t.z] as [number, number, number],
+        scale: t.s,
+        color: t.pink ? '#ffb3c8' : '#4f9e4c',
+      })),
+    [trees],
+  )
   return (
     <>
-      {trees.map((t, i) => (
-        <group key={i} position={[t.x, t.y, t.z]} scale={t.s}>
-          <mesh position={[0, 1, 0]}>
-            <cylinderGeometry args={[0.3, 0.4, 2, 5]} />
-            <meshLambertMaterial color="#8a6a4a" flatShading />
-          </mesh>
-          <mesh position={[0, 3.2, 0]}>
-            <icosahedronGeometry args={[1.8, 0]} />
-            <meshLambertMaterial color={t.pink ? '#ffb3c8' : '#4f9e4c'} flatShading />
-          </mesh>
-        </group>
-      ))}
+      <Instanced items={trunks}>
+        <cylinderGeometry args={[0.3, 0.4, 2, 5]} />
+        <meshLambertMaterial color="#8a6a4a" flatShading />
+      </Instanced>
+      <Instanced items={canopies}>
+        <icosahedronGeometry args={[1.8, 0]} />
+        <meshLambertMaterial flatShading />
+      </Instanced>
     </>
   )
-}
+})
 
 const FLOWER_COLORS = ['#ff9ec0', '#ffffff', '#ffe27a']
 
-function Flowers({ count }: { count: number }) {
+const Flowers = memo(function Flowers({ count }: { count: number }) {
   const flowers = useMemo(() => {
     const rand = mulberry32(303)
     return Array.from({ length: count }, (_, i) => {
       const x = (rand() - 0.5) * 50
       const z = (rand() - 0.5) * 40 - 6
-      return { x, y: groundHeight(x, z) + 0.12, z, color: FLOWER_COLORS[i % 3] }
+      return {
+        pos: [x, groundHeight(x, z) + 0.12, z] as [number, number, number],
+        scale: 1,
+        color: FLOWER_COLORS[i % 3],
+      }
     })
   }, [count])
   return (
-    <>
-      {flowers.map((f, i) => (
-        <mesh key={i} position={[f.x, f.y, f.z]}>
-          <icosahedronGeometry args={[0.12, 0]} />
-          <meshLambertMaterial color={f.color} />
-        </mesh>
-      ))}
-    </>
+    <Instanced items={flowers}>
+      <icosahedronGeometry args={[0.12, 0]} />
+      <meshLambertMaterial />
+    </Instanced>
   )
-}
+})
 
 interface CloudData {
   x: number
@@ -129,8 +171,20 @@ interface CloudData {
   puffs: { r: number; pos: [number, number, number] }[]
 }
 
-function Clouds({ count, reducedMotion }: { count: number; reducedMotion: boolean }) {
+const Clouds = memo(function Clouds({ count, reducedMotion }: { count: number; reducedMotion: boolean }) {
   const refs = useRef<(THREE.Group | null)[]>([])
+  const puffGeo = useMemo(() => new THREE.IcosahedronGeometry(1, 0), [])
+  const puffMat = useMemo(
+    () => new THREE.MeshLambertMaterial({ color: '#ffffff', flatShading: true, emissive: '#9cb8d0', emissiveIntensity: 0.35 }),
+    [],
+  )
+  useEffect(
+    () => () => {
+      puffGeo.dispose()
+      puffMat.dispose()
+    },
+    [puffGeo, puffMat],
+  )
   const clouds = useMemo<CloudData[]>(() => {
     const rand = mulberry32(404)
     return Array.from({ length: count }, () => {
@@ -169,16 +223,13 @@ function Clouds({ count, reducedMotion }: { count: number; reducedMotion: boolea
           position={[c.x, c.y, c.z]}
         >
           {c.puffs.map((p, j) => (
-            <mesh key={j} position={p.pos}>
-              <icosahedronGeometry args={[p.r, 0]} />
-              <meshLambertMaterial color="#ffffff" flatShading emissive="#9cb8d0" emissiveIntensity={0.35} />
-            </mesh>
+            <mesh key={j} position={p.pos} scale={p.r} geometry={puffGeo} material={puffMat} />
           ))}
         </group>
       ))}
     </>
   )
-}
+})
 
 const POLAROIDS: { pos: [number, number, number]; rot: number; color: string }[] = [
   { pos: [-2.2, 0.22, -0.8], rot: 0.15, color: '#9bd4f7' },
@@ -186,7 +237,7 @@ const POLAROIDS: { pos: [number, number, number]; rot: number; color: string }[]
   { pos: [1.6, 0.22, -0.6], rot: 0.1, color: '#ffb8c6' },
 ]
 
-function Notebook() {
+const Notebook = memo(function Notebook() {
   return (
     <group position={NOTEBOOK_POS} rotation={[0, -0.15, 0]}>
       {[-1, 1].map((side) => (
@@ -215,9 +266,9 @@ function Notebook() {
       ))}
     </group>
   )
-}
+})
 
-export function World({ tier, reducedMotion }: { tier: Tier; reducedMotion: boolean }) {
+export const World = memo(function World({ tier, reducedMotion }: { tier: Tier; reducedMotion: boolean }) {
   const cfg = sceneConfig(tier)
   return (
     <>
@@ -232,4 +283,4 @@ export function World({ tier, reducedMotion }: { tier: Tier; reducedMotion: bool
       <Notebook />
     </>
   )
-}
+})
