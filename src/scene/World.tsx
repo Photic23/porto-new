@@ -175,7 +175,7 @@ const Clouds = memo(function Clouds({ count, reducedMotion }: { count: number; r
   const refs = useRef<(THREE.Group | null)[]>([])
   const puffGeo = useMemo(() => new THREE.IcosahedronGeometry(1, 0), [])
   const puffMat = useMemo(
-    () => new THREE.MeshLambertMaterial({ color: '#ffffff', flatShading: true, emissive: '#9cb8d0', emissiveIntensity: 0.35 }),
+    () => new THREE.MeshLambertMaterial({ color: '#ffffff', flatShading: true, emissive: '#ffffff', emissiveIntensity: 0.5 }),
     [],
   )
   useEffect(

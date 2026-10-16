@@ -60,7 +60,7 @@ export function SceneCanvas({ progress, focus, reducedMotion, onContextLost }: P
       gl={{ antialias: false }}
       flat
       camera={{ fov: 55, near: 0.1, far: 400, position: [0, 6, 14] }}
-      style={{ position: 'fixed', inset: 0, width: '100vw', height: '100vh', imageRendering: 'pixelated' }}
+      style={{ position: 'fixed', inset: 0, imageRendering: 'pixelated' }}
       onCreated={({ gl }) => {
         const el = gl.domElement
         const handler = (e: Event) => {

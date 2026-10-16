@@ -8,6 +8,11 @@
   align-items: flex-end;
   gap: 8px;
   max-width: calc(100vw - 32px);
+  pointer-events: none;
+}
+.button,
+.panel {
+  pointer-events: auto;
 }
 .button {
   width: 48px;
@@ -44,6 +49,5 @@
   color: var(--ink);
 }
 @media (max-width: 767px) {
-  .radio { left: 16px; align-items: flex-end; }
-  .panel { width: 100%; }
+  .panel { width: calc(100vw - 32px); }
 }

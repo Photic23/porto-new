@@ -20,6 +20,15 @@ describe('hasWebGL', () => {
   })
 })
 
+describe('hasWebGL release', () => {
+  it('calls loseContext when available', () => {
+    const loseContext = vi.fn()
+    const ctx = { getExtension: () => ({ loseContext }) }
+    expect(hasWebGL(docWith(() => ctx))).toBe(true)
+    expect(loseContext).toHaveBeenCalled()
+  })
+})
+
 describe('usePrefersReducedMotion', () => {
   afterEach(() => { vi.unstubAllGlobals() })
   it('follows matchMedia and updates on change', () => {

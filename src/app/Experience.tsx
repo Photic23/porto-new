@@ -1,9 +1,10 @@
 'use client'
 import dynamic from 'next/dynamic'
-import { useReducer, useState, useSyncExternalStore } from 'react'
+import { useCallback, useReducer, useState, useSyncExternalStore } from 'react'
 import { hasWebGL } from '@/capability/detect'
 import { usePrefersReducedMotion } from '@/capability/usePrefersReducedMotion'
 import { easeInOutQuad, scrollProgress } from '@/scene/cameraPath'
+import type { SectionId } from '@/content/types'
 import { initialUI, uiReducer, useScrollLock } from '@/state/uiState'
 import { FallbackPage } from '@/ui/FallbackPage'
 import { Menu } from '@/ui/Menu'
@@ -49,14 +50,18 @@ export function Experience() {
   const probed = useSyncExternalStore<boolean | null>(noopSubscribe, getGl, () => null)
   const [lost, setLost] = useState(false)
   const [state, dispatch] = useReducer(uiReducer, initialUI)
+  const [restoreId, setRestoreId] = useState<SectionId | null>(null)
+  const clearRestore = useCallback(() => setRestoreId(null), [])
   const raw = useSyncExternalStore(subscribeScroll, getRawProgress, () => 0)
   const reduced = usePrefersReducedMotion()
 
   const fallback = probed === false || lost
   useScrollLock(state.open !== null && !fallback)
 
+  const spacer = reduced ? '100vh' : '400vh'
+
   // Keep the spacer in the DOM while probing so scrollHeight is realistic.
-  if (probed === null) return <div style={{ height: '400vh' }} aria-hidden="true" />
+  if (probed === null) return <div style={{ height: spacer }} aria-hidden="true" />
   if (fallback) return <FallbackPage />
 
   const progress = reduced ? 1 : easeInOutQuad(raw)
@@ -69,10 +74,24 @@ export function Experience() {
         reducedMotion={reduced}
         onContextLost={() => setLost(true)}
       />
-      <div style={{ height: '400vh' }} aria-hidden="true" />
+      <div style={{ height: spacer }} aria-hidden="true" />
       <TitleOverlay progress={progress} />
-      <Menu state={state} dispatch={dispatch} visible={progress > 0.85} />
-      {state.open && <SectionPage id={state.open} onClose={() => dispatch({ type: 'close' })} />}
+      <Menu
+        state={state}
+        dispatch={dispatch}
+        visible={progress > 0.85 && state.open === null}
+        focusId={restoreId}
+        onFocused={clearRestore}
+      />
+      {state.open && (
+        <SectionPage
+          id={state.open}
+          onClose={() => {
+            setRestoreId(state.open)
+            dispatch({ type: 'close' })
+          }}
+        />
+      )}
       <Radio />
     </>
   )

@@ -83,9 +83,20 @@ describe('Experience', () => {
     expect(screen.getByRole('button', { name: /back/ })).toBeTruthy()
     expect(document.documentElement.style.overflow).toBe('hidden')
     expect(last().focus).toBe(1)
+    expect(screen.queryByRole('navigation')).toBeNull() // menu hidden while open
+    expect(screen.getByRole('button', { name: /back/ })).toHaveFocus()
     fireEvent.keyDown(window, { key: 'Escape' })
     expect(screen.queryByRole('button', { name: /back/ })).toBeNull()
+    expect(screen.getByRole('button', { name: /experience/ })).toHaveFocus() // focus returns
     expect(document.documentElement.style.overflow).not.toBe('hidden')
+  })
+
+  it('uses a 100vh spacer under reduced motion', async () => {
+    reduced.mockReturnValue(true)
+    const { container } = render(<Experience />)
+    await screen.findByTestId('scene')
+    const spacer = container.querySelector('div[aria-hidden="true"]') as HTMLElement
+    expect(spacer.style.height).toBe('100vh')
   })
 
   it('switches to fallback on context lost', async () => {

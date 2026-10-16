@@ -1,5 +1,5 @@
 'use client'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { content } from '@/content/content'
 import { sectionEntries } from '@/content/sections'
 import type { Entry, SectionId } from '@/content/types'
@@ -33,6 +33,10 @@ export function EntryList({ entries }: { entries: Entry[] }) {
 }
 
 export function SectionPage({ id, onClose }: { id: SectionId; onClose: () => void }) {
+  const backRef = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    backRef.current?.focus()
+  }, [])
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -43,13 +47,15 @@ export function SectionPage({ id, onClose }: { id: SectionId; onClose: () => voi
 
   return (
     <section className={styles.page} aria-label={id}>
-      <button type="button" className={styles.back} onClick={onClose}>◀ back</button>
+      <button ref={backRef} type="button" className={styles.back} onClick={onClose}>◀ back</button>
       <h2 className={styles.heading}>{id}</h2>
-      {id === 'bio' ? (
-        <p className={styles.empty}>{content.bio}</p>
-      ) : (
-        <EntryList entries={sectionEntries(content, id)} />
-      )}
+      <div className={styles.scroll}>
+        {id === 'bio' ? (
+          <p className={styles.empty}>{content.bio}</p>
+        ) : (
+          <EntryList entries={sectionEntries(content, id)} />
+        )}
+      </div>
     </section>
   )
 }
