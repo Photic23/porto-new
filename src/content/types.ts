@@ -1,0 +1,20 @@
+export type SectionId = 'bio' | 'education' | 'experience' | 'competition'
+
+export interface Entry {
+  title: string
+  org?: string
+  date?: string
+  description?: string
+  link?: string
+  certificate?: string
+}
+
+export interface Content {
+  name: string
+  tagline: string
+  bio: string
+  education: Entry[]
+  experience: Entry[]
+  competition: Entry[]
+  spotifyTrackUrl: string
+}
