@@ -56,4 +56,10 @@ describe('Radio', () => {
     expect(panel).toHaveAttribute('hidden')
     expect(screen.getByRole('button', { name: 'open radio' })).toBeInTheDocument()
   })
+
+  it('initialOpen mounts the open panel immediately', () => {
+    const { container } = render(<Radio initialOpen />)
+    expect(container.querySelector('iframe')).not.toBeNull()
+    expect(screen.getByRole('button', { name: 'close radio' })).toBeInTheDocument()
+  })
 })

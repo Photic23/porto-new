@@ -1,7 +1,7 @@
 import { content } from '@/content/content'
 import styles from './ui.module.css'
 
-export function TitleOverlay({ progress }: { progress: number }) {
+export function TitleOverlay({ progress, prompt = true }: { progress: number; prompt?: boolean }) {
   const opacity = 1 - Math.min(1, progress * 3)
   return (
     <>
@@ -12,7 +12,7 @@ export function TitleOverlay({ progress }: { progress: number }) {
         </div>
       </div>
       <div className={styles.hud}>♥♥♥ LV.22</div>
-      {progress <= 0.1 && <div className={styles.prompt}>▼ scroll to look down ▼</div>}
+      {prompt && progress <= 0.1 && <div className={styles.prompt}>▼ scroll to look down ▼</div>}
     </>
   )
 }

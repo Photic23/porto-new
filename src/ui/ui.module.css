@@ -54,6 +54,35 @@
 @media (prefers-reduced-motion: reduce) {
   .prompt { animation: none; }
 }
+.pressStart {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 16px 18vh;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.pressStart:focus { outline: none; }
+.pressStartLabel {
+  padding: 10px 20px;
+  font-family: var(--font-title);
+  font-size: 26px;
+  color: var(--ink);
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.25);
+  animation: pressBlink 1.2s steps(1) infinite;
+}
+/* blink the words, keep the box on screen */
+@keyframes pressBlink { 50% { color: transparent; } }
+.pressStart:focus-visible .pressStartLabel { outline: 3px solid var(--pink-1); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  .pressStartLabel { animation: none; }
+}
 .menu {
   position: fixed;
   left: 16px;

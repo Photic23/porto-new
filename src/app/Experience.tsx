@@ -8,6 +8,7 @@ import type { SectionId } from '@/content/types'
 import { initialUI, uiReducer, useScrollLock } from '@/state/uiState'
 import { FallbackPage } from '@/ui/FallbackPage'
 import { Menu } from '@/ui/Menu'
+import { PressStart } from '@/ui/PressStart'
 import { Radio } from '@/ui/Radio'
 import { SectionPage } from '@/ui/SectionPage'
 import { TitleOverlay } from '@/ui/TitleOverlay'
@@ -54,15 +55,23 @@ export function Experience() {
   const clearRestore = useCallback(() => setRestoreId(null), [])
   const raw = useSyncExternalStore(subscribeScroll, getRawProgress, () => 0)
   const reduced = usePrefersReducedMotion()
+  const [started, setStarted] = useState(false)
 
   const fallback = probed === false || lost
-  useScrollLock(state.open !== null && !fallback)
+  useScrollLock(!started || (state.open !== null && !fallback))
 
   const spacer = reduced ? '100vh' : '400vh'
 
   // Keep the spacer in the DOM while probing so scrollHeight is realistic.
   if (probed === null) return <div style={{ height: spacer }} aria-hidden="true" />
-  if (fallback) return <FallbackPage />
+  const gate = !started && <PressStart onStart={() => setStarted(true)} />
+  if (fallback)
+    return (
+      <>
+        <FallbackPage radioOpen={started} />
+        {gate}
+      </>
+    )
 
   const progress = reduced ? 1 : easeInOutQuad(raw)
 
@@ -75,11 +84,11 @@ export function Experience() {
         onContextLost={() => setLost(true)}
       />
       <div style={{ height: spacer }} aria-hidden="true" />
-      <TitleOverlay progress={progress} />
+      <TitleOverlay progress={progress} prompt={started} />
       <Menu
         state={state}
         dispatch={dispatch}
-        visible={progress > 0.85 && state.open === null}
+        visible={started && progress > 0.85 && state.open === null}
         focusId={restoreId}
         onFocused={clearRestore}
       />
@@ -92,7 +101,8 @@ export function Experience() {
           }}
         />
       )}
-      <Radio />
+      <Radio key={started ? 'on' : 'off'} initialOpen={started} />
+      {gate}
     </>
   )
 }

@@ -42,6 +42,8 @@ function setScroll(y: number) {
   })
 }
 const last = () => calls[calls.length - 1]
+const start = async () =>
+  fireEvent.click(await screen.findByRole('button', { name: /press start/ }))
 
 beforeEach(() => {
   calls.length = 0
@@ -79,6 +81,7 @@ describe('Experience', () => {
     setScroll(2400)
     render(<Experience />)
     await screen.findByTestId('scene')
+    await start()
     fireEvent.click(screen.getByRole('button', { name: /experience/ }))
     expect(screen.getByRole('button', { name: /back/ })).toBeTruthy()
     expect(document.documentElement.style.overflow).toBe('hidden')
@@ -128,6 +131,7 @@ describe('Experience', () => {
   it('updates progress on scroll and resize, showing the menu above 0.85', async () => {
     render(<Experience />)
     await screen.findByTestId('scene')
+    await start()
     setScroll(1200)
     fireEvent.scroll(window)
     await waitFor(() => expect(last().progress).toBe(0.5))
@@ -153,9 +157,44 @@ describe('Experience', () => {
     setScroll(2400)
     render(<Experience />)
     await screen.findByTestId('scene')
+    await start()
     fireEvent.click(screen.getByRole('button', { name: /experience/ }))
     expect(document.documentElement.style.overflow).toBe('hidden')
     act(() => (last().onContextLost as () => void)())
     expect(document.documentElement.style.overflow).not.toBe('hidden')
+  })
+
+  describe('press start', () => {
+    it('gates the page: focused button, scroll locked, no menu or scroll prompt', async () => {
+      setScroll(2400)
+      render(<Experience />)
+      await screen.findByTestId('scene')
+      const btn = await screen.findByRole('button', { name: /press start/ })
+      expect(btn).toHaveFocus()
+      expect(document.documentElement.style.overflow).toBe('hidden')
+      expect(screen.queryByRole('navigation')).toBeNull()
+      expect(screen.queryByText(/scroll to look down/)).toBeNull()
+    })
+
+    it('starting unlocks scroll, opens the radio, and shows the scroll prompt', async () => {
+      const { container } = render(<Experience />)
+      await screen.findByTestId('scene')
+      expect(container.querySelector('iframe')).toBeNull()
+      await start()
+      expect(screen.queryByRole('button', { name: /press start/ })).toBeNull()
+      expect(document.documentElement.style.overflow).not.toBe('hidden')
+      expect(screen.getByRole('button', { name: 'close radio' })).toBeTruthy()
+      expect(container.querySelector('iframe')).not.toBeNull()
+      expect(screen.getByText(/scroll to look down/)).toBeTruthy()
+    })
+
+    it('gates the fallback page too, and opens its radio on start', async () => {
+      hasWebGL.mockReturnValue(false)
+      const { container } = render(<Experience />)
+      await start()
+      expect(screen.getByRole('heading', { level: 2, name: 'education' })).toBeTruthy()
+      expect(container.querySelector('iframe')).not.toBeNull()
+      expect(document.documentElement.style.overflow).not.toBe('hidden')
+    })
   })
 })

@@ -19,9 +19,9 @@ function RadioIcon() {
   )
 }
 
-export function Radio() {
-  const [open, setOpen] = useState(false)
-  const [mounted, setMounted] = useState(false)
+export function Radio({ initialOpen = false }: { initialOpen?: boolean }) {
+  const [open, setOpen] = useState(initialOpen)
+  const [mounted, setMounted] = useState(initialOpen)
   const toggle = () => {
     setOpen((o) => !o)
     setMounted(true)

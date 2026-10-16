@@ -5,7 +5,7 @@ import { EntryList } from './SectionPage'
 import { Radio } from './Radio'
 import styles from './fallback.module.css'
 
-export function FallbackPage() {
+export function FallbackPage({ radioOpen = false }: { radioOpen?: boolean }) {
   return (
     <main className={styles.page}>
       <header className={styles.header}>
@@ -24,7 +24,7 @@ export function FallbackPage() {
           </section>
         ))}
       </div>
-      <Radio />
+      <Radio key={radioOpen ? 'on' : 'off'} initialOpen={radioOpen} />
     </main>
   )
 }
