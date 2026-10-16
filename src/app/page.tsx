@@ -1,10 +1,5 @@
-import { content } from '@/content/content'
+import { Experience } from './Experience'
 
 export default function Home() {
-  return (
-    <main>
-      <h1>{content.name}</h1>
-      <p>{content.tagline}</p>
-    </main>
-  )
+  return <Experience />
 }
