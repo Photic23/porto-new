@@ -1,0 +1,8 @@
+export function hasWebGL(doc: Document = document): boolean {
+  try {
+    const canvas = doc.createElement('canvas')
+    return !!(canvas.getContext('webgl2') || canvas.getContext('webgl'))
+  } catch {
+    return false
+  }
+}
