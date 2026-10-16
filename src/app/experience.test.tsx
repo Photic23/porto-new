@@ -31,6 +31,10 @@ vi.mock('@/capability/usePrefersReducedMotion', () => ({
   usePrefersReducedMotion: () => reduced(),
 }))
 
+vi.mock('@/content/spotifyApi', () => ({
+  loadSpotifyIframeApi: () => Promise.reject(new Error('no api in tests')),
+}))
+
 import { Experience } from './Experience'
 
 function setScroll(y: number) {
@@ -184,7 +188,7 @@ describe('Experience', () => {
       expect(screen.queryByRole('button', { name: /press start/ })).toBeNull()
       expect(document.documentElement.style.overflow).not.toBe('hidden')
       expect(screen.getByRole('button', { name: 'close radio' })).toBeTruthy()
-      expect(container.querySelector('iframe')).not.toBeNull()
+      await waitFor(() => expect(container.querySelector('iframe')).not.toBeNull())
       expect(screen.getByText(/scroll to look down/)).toBeTruthy()
     })
 
@@ -193,7 +197,7 @@ describe('Experience', () => {
       const { container } = render(<Experience />)
       await start()
       expect(screen.getByRole('heading', { level: 2, name: 'education' })).toBeTruthy()
-      expect(container.querySelector('iframe')).not.toBeNull()
+      await waitFor(() => expect(container.querySelector('iframe')).not.toBeNull())
       expect(document.documentElement.style.overflow).not.toBe('hidden')
     })
   })

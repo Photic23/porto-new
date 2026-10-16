@@ -1,7 +1,11 @@
-import { describe, it, expect } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+
+const loadApi = vi.fn()
+vi.mock('@/content/spotifyApi', () => ({ loadSpotifyIframeApi: () => loadApi() }))
+
 import { Radio } from './Radio'
-import { spotifyEmbedUrl } from '@/content/spotify'
+import { spotifyEmbedUrl, spotifyUri } from '@/content/spotify'
 import { content } from '@/content/content'
 
 describe('spotifyEmbedUrl', () => {
@@ -25,6 +29,21 @@ describe('spotifyEmbedUrl', () => {
   })
 })
 
+describe('spotifyUri', () => {
+  it('converts track and album urls to spotify: uris', () => {
+    expect(spotifyUri('https://open.spotify.com/track/abc123?si=x')).toBe('spotify:track:abc123')
+    expect(spotifyUri('https://open.spotify.com/intl-fr/album/XyZ9')).toBe('spotify:album:XyZ9')
+  })
+  it('returns null for unrecognised urls', () => {
+    expect(spotifyUri('https://example.com/foo')).toBeNull()
+  })
+})
+
+// By default the Spotify iFrame API is unavailable, so Radio falls back to the plain embed.
+beforeEach(() => {
+  loadApi.mockReset().mockRejectedValue(new Error('blocked'))
+})
+
 describe('Radio', () => {
   const src = spotifyEmbedUrl(content.spotifyTrackUrl)
   it('starts closed with no iframe', () => {
@@ -32,10 +51,16 @@ describe('Radio', () => {
     expect(screen.getByRole('button', { name: 'open radio' })).toBeInTheDocument()
     expect(container.querySelector('iframe')).toBeNull()
   })
-  it('opens with iframe and fallback link', () => {
+  const iframeIn = (c: HTMLElement) =>
+    waitFor(() => {
+      const f = c.querySelector('iframe')
+      expect(f).not.toBeNull()
+      return f as HTMLIFrameElement
+    })
+  it('falls back to the plain embed and link when the API is unavailable', async () => {
     const { container } = render(<Radio />)
     fireEvent.click(screen.getByRole('button', { name: 'open radio' }))
-    const f = container.querySelector('iframe') as HTMLIFrameElement
+    const f = await iframeIn(container)
     expect(f.getAttribute('src')).toBe(src)
     expect(f.getAttribute('height')).toBe('80')
     expect(f.getAttribute('allow')).toContain('autoplay; encrypted-media')
@@ -45,9 +70,10 @@ describe('Radio', () => {
     expect(link).toHaveAttribute('rel', 'noopener noreferrer')
     expect(screen.getByRole('button', { name: 'close radio' })).toBeInTheDocument()
   })
-  it('keeps iframe mounted but hides panel on close', () => {
+  it('keeps iframe mounted but hides panel on close', async () => {
     const { container } = render(<Radio />)
     fireEvent.click(screen.getByRole('button', { name: 'open radio' }))
+    await iframeIn(container)
     fireEvent.click(screen.getByRole('button', { name: 'close radio' }))
     const f = container.querySelector('iframe') as HTMLIFrameElement
     expect(f).toBeInTheDocument()
@@ -57,9 +83,59 @@ describe('Radio', () => {
     expect(screen.getByRole('button', { name: 'open radio' })).toBeInTheDocument()
   })
 
-  it('initialOpen mounts the open panel immediately', () => {
+  it('initialOpen mounts the open panel immediately', async () => {
     const { container } = render(<Radio initialOpen />)
-    expect(container.querySelector('iframe')).not.toBeNull()
+    await iframeIn(container)
     expect(screen.getByRole('button', { name: 'close radio' })).toBeInTheDocument()
+  })
+
+  describe('with the Spotify iFrame API', () => {
+    function fakeApi() {
+      const listeners: Record<string, () => void> = {}
+      const controller = {
+        play: vi.fn(),
+        destroy: vi.fn(),
+        addListener: vi.fn((ev: string, fn: () => void) => (listeners[ev] = fn)),
+      }
+      const api = {
+        createController: vi.fn(
+          (el: HTMLElement, _opts: unknown, cb: (c: typeof controller) => void) => {
+            el.replaceWith(Object.assign(document.createElement('iframe'), { src: 'x' }))
+            cb(controller)
+          },
+        ),
+      }
+      loadApi.mockResolvedValue(api)
+      return { api, controller, listeners }
+    }
+
+    it('autoPlay creates a controller for the uri and plays once it is ready', async () => {
+      const { api, controller, listeners } = fakeApi()
+      render(<Radio initialOpen autoPlay />)
+      await waitFor(() => expect(api.createController).toHaveBeenCalled())
+      expect(api.createController.mock.calls[0][1]).toMatchObject({
+        uri: 'spotify:album:6fZfS2mCLxlXt4MVSedvXj',
+      })
+      expect(controller.play).not.toHaveBeenCalled()
+      listeners.ready()
+      expect(controller.play).toHaveBeenCalledTimes(1)
+    })
+
+    it('opening by hand does not autoplay', async () => {
+      const { api, controller, listeners } = fakeApi()
+      render(<Radio />)
+      fireEvent.click(screen.getByRole('button', { name: 'open radio' }))
+      await waitFor(() => expect(api.createController).toHaveBeenCalled())
+      listeners.ready?.()
+      expect(controller.play).not.toHaveBeenCalled()
+    })
+
+    it('destroys the controller on unmount', async () => {
+      const { api, controller } = fakeApi()
+      const { unmount } = render(<Radio initialOpen autoPlay />)
+      await waitFor(() => expect(api.createController).toHaveBeenCalled())
+      unmount()
+      expect(controller.destroy).toHaveBeenCalled()
+    })
   })
 })
