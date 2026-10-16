@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, act } from '@testing-library/react'
+import { render, waitFor, screen, fireEvent, act } from '@testing-library/react'
 
 const calls: Array<Record<string, unknown>> = []
 vi.mock('@/scene/SceneCanvas', () => ({
@@ -94,5 +94,57 @@ describe('Experience', () => {
     act(() => (last().onContextLost as () => void)())
     expect(screen.queryByTestId('scene')).toBeNull()
     expect(screen.getByRole('heading', { level: 2, name: 'education' })).toBeTruthy()
+  })
+
+  it('starts at progress 0 at the top and hides the menu', async () => {
+    render(<Experience />)
+    await screen.findByTestId('scene')
+    expect(last().progress).toBe(0)
+    expect(screen.queryByRole('navigation')).toBeNull()
+  })
+
+  it('reads a realistic layout: spacer present from first render', async () => {
+    // scrollHeight is 0 until the spacer exists, like a real browser
+    Object.defineProperty(document.documentElement, 'scrollHeight', {
+      configurable: true,
+      get: () => (document.querySelector('div[aria-hidden="true"]') ? 3200 : 0),
+    })
+    render(<Experience />)
+    await screen.findByTestId('scene')
+    await waitFor(() => expect(last().progress).toBe(0))
+  })
+
+  it('updates progress on scroll and resize, showing the menu above 0.85', async () => {
+    render(<Experience />)
+    await screen.findByTestId('scene')
+    setScroll(1200)
+    fireEvent.scroll(window)
+    await waitFor(() => expect(last().progress).toBe(0.5))
+    expect(screen.queryByRole('navigation')).toBeNull()
+    setScroll(2400)
+    fireEvent(window, new Event('resize'))
+    await waitFor(() => expect(last().progress).toBe(1))
+    expect(screen.getByRole('navigation')).toBeTruthy()
+  })
+
+  it('removes listeners on unmount', async () => {
+    const rm = vi.spyOn(window, 'removeEventListener')
+    const { unmount } = render(<Experience />)
+    await screen.findByTestId('scene')
+    unmount()
+    const names = rm.mock.calls.map((c) => c[0])
+    expect(names).toContain('scroll')
+    expect(names).toContain('resize')
+    rm.mockRestore()
+  })
+
+  it('releases the scroll lock when the context is lost with a section open', async () => {
+    setScroll(2400)
+    render(<Experience />)
+    await screen.findByTestId('scene')
+    fireEvent.click(screen.getByRole('button', { name: /experience/ }))
+    expect(document.documentElement.style.overflow).toBe('hidden')
+    act(() => (last().onContextLost as () => void)())
+    expect(document.documentElement.style.overflow).not.toBe('hidden')
   })
 })

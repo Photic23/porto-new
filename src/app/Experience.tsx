@@ -27,6 +27,7 @@ function subscribeScroll(cb: () => void): () => void {
       })
     }
   }
+  schedule() // re-read once after mount (layout may have changed since first render)
   window.addEventListener('scroll', schedule, { passive: true })
   window.addEventListener('resize', schedule)
   return () => {
@@ -51,10 +52,12 @@ export function Experience() {
   const raw = useSyncExternalStore(subscribeScroll, getRawProgress, () => 0)
   const reduced = usePrefersReducedMotion()
 
-  useScrollLock(state.open !== null)
+  const fallback = probed === false || lost
+  useScrollLock(state.open !== null && !fallback)
 
-  if (probed === null) return null
-  if (!probed || lost) return <FallbackPage />
+  // Keep the spacer in the DOM while probing so scrollHeight is realistic.
+  if (probed === null) return <div style={{ height: '400vh' }} aria-hidden="true" />
+  if (fallback) return <FallbackPage />
 
   const progress = reduced ? 1 : easeInOutQuad(raw)
 
