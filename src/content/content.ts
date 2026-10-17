@@ -129,8 +129,7 @@ export const content: Content = {
     },
   ],
   socials: [
-    // TODO(kyse): replace with your TikTok profile link
-    { platform: 'tiktok', label: 'TikTok', url: 'https://www.tiktok.com/@your-handle' },
+    { platform: 'tiktok', label: 'TikTok', url: 'https://www.tiktok.com/@0xkyse' },
   ],
   spotifyTrackUrl: 'https://open.spotify.com/album/6fZfS2mCLxlXt4MVSedvXj',
 }
