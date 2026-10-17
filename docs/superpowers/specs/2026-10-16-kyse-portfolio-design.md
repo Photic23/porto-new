@@ -14,14 +14,14 @@ A working throwaway spike of the scene exists at `.superpowers/brainstorm/377-17
 ## Goals
 
 - Opening the site feels like the title screen of a cozy game.
-- Friends can read kyse's **bio, education, experience and competitions** easily.
+- Friends can read kyse's **bio, education, experience and achievements** easily.
 - Content is easy to update without touching 3D code.
 - Deploys on Vercel.
 
 ## Non-goals (for v1)
 
 - Competition certificates (planned later, not in v1).
-- A separate "projects/code" section. Projects go inside experience/competition entries.
+- A separate "projects/code" section. Projects go inside experience/achievement entries.
 - CMS, blog, contact forms, analytics.
 - Hosting any audio files.
 
@@ -38,7 +38,6 @@ A working throwaway spike of the scene exists at `.superpowers/brainstorm/377-17
 ### 1. Title screen (scroll = 0)
 - Camera looks **up at the sky**: gradient blue → pale cream at the horizon, a low-poly sun, blocky low-poly clouds drifting slowly.
 - Overlay: **"hi, i'm kyse"** as a game title (Pixelify Sans, white with hard drop shadow), subtitle "i write software & make little things".
-- Small HUD top-left: `♥♥♥ LV.22` (decorative).
 - Blinking prompt bottom-centre: `▼ scroll to look down ▼`.
 - Gentle idle camera sway.
 
@@ -49,7 +48,7 @@ A working throwaway spike of the scene exists at `.superpowers/brainstorm/377-17
 
 ### 3. The notebook (scroll = end)
 - Camera settles above an **open notebook lying in the grass** (pink covers, cream pages, a few polaroids on the pages).
-- A game-style menu appears with four sections: **bio · education · experience · competition**. The selected item is marked with `▶`.
+- A game-style menu appears with four sections: **bio · education · experience · organization · projects · achievement**. The selected item is marked with `▶`.
 
 ### 4. Opening a section *(builder's/Claude's call, agreed in principle)*
 - Choosing a section moves the camera in closer to the notebook. The section's content appears **on the notebook page** in pixel fonts. The 3D scene stays visible; no modal window.
@@ -65,10 +64,10 @@ A working throwaway spike of the scene exists at `.superpowers/brainstorm/377-17
 - How the text is put "on the page" (HTML overlay positioned over the notebook vs. text rendered into the 3D scene) is the builder's call. Legibility and accessibility come first, so an HTML overlay is preferred.
 
 ### Music
-- A small **pixel-art radio/cassette player** in a corner wraps an **official Spotify embed** of *Get Your Wish* (Porter Robinson, *Nurture*). The builder looks up the track's Spotify URL.
-- It plays only on user interaction (browser autoplay rules). No audio is hosted on the site.
-- Known and accepted: visitors not logged in to Spotify hear a ~30-second preview.
-- *(Claude's call)* The Spotify embed stays **visible**, never hidden or driven through custom buttons. This keeps within Spotify's embed terms and avoids an extra script. Closed, the corner shows only a small pixel radio icon. Clicking it opens a small cream pixel-framed panel with the real compact Spotify embed inside, which starts playing from there. Clicking the radio again collapses the panel. Spotify's player keeps playing while collapsed if the iframe stays mounted, so keep it mounted once opened. On mobile the panel opens above the radio icon at full width minus the gutters.
+- *(Updated 2026-10-17, at kyse's request, after Spotify and SoundCloud both cut logged-out visitors to 30-second previews)* The site **hosts the song itself**, the way guns.lol profiles do: *Mirror* (Porter Robinson) at `public/music/mirror.mp3`, played with one shared `<audio>` element (`src/audio/music.ts`). It loops, uses `preload="none"`, and nothing downloads until play.
+- **▶ press start** calls `play()` directly inside its click handler, which Safari requires, so the full song starts on that click everywhere.
+- The bottom-right **pixel radio** is now our own player. Its panel shows the song name, a pixel play/pause button and a volume slider, and the radio icon bobs while music plays. If the file is missing or broken it shows "song unavailable". The panel folds when the notebook menu appears, and the music keeps playing.
+- Known and accepted by kyse: serving a copyrighted track from the site risks a takedown request. Swapping the file for a licensed or royalty-free track is a one-line change in `content.ts`. Vercel Hobby serves `public/` from its CDN with 100 GB/month of transfer.
 
 ## Visual system
 
@@ -79,10 +78,10 @@ A working throwaway spike of the scene exists at `.superpowers/brainstorm/377-17
 
 ## Content
 
-- All text content lives in **one file**, `content.json` (or a typed `content.ts`; builder's call), with `bio` and lists for `education`, `experience` and `competition`.
+- All text content lives in **one file**, `content.json` (or a typed `content.ts`; builder's call), with `bio` and lists for `education`, `experience` and `achievement`.
 - Entry shape is up to the builder. Suggested minimum: title, organisation/place, date or date range, short description, optional link.
 - Use **placeholder entries** until kyse supplies real content.
-- Structure entries so a `certificate` field (image/link) can be added to competitions later without a redesign.
+- Structure entries so a `certificate` field (image/link) can be added to achievements later without a redesign.
 
 ## Tech (decided by kyse)
 

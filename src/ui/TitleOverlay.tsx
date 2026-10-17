@@ -1,0 +1,17 @@
+import { content } from '@/content/content'
+import styles from './ui.module.css'
+
+export function TitleOverlay({ progress, prompt = true }: { progress: number; prompt?: boolean }) {
+  const opacity = 1 - Math.min(1, progress * 3)
+  return (
+    <>
+      <div className={styles.titleWrap}>
+        <div className={styles.titleFade} style={{ opacity }}>
+          <h1 className={styles.title}>hi, i&apos;m {content.name}</h1>
+          <p className={styles.subtitle}>{content.tagline}</p>
+        </div>
+      </div>
+      {prompt && progress <= 0.1 && <div className={styles.prompt}>▼ scroll to look down ▼</div>}
+    </>
+  )
+}

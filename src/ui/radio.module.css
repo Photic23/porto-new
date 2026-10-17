@@ -1,0 +1,117 @@
+.radio {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  max-width: calc(100vw - 32px);
+  pointer-events: none;
+}
+.button,
+.panel {
+  pointer-events: auto;
+}
+.button {
+  width: 48px;
+  height: 48px;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  padding: 0;
+}
+.button:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.25); }
+.panel {
+  width: 320px;
+  max-width: calc(100vw - 32px);
+  box-sizing: border-box;
+  padding: 8px;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.25);
+}
+.panel[hidden] { display: none; }
+.song {
+  margin: 0 0 4px;
+  font-family: var(--font-body);
+  font-size: 20px;
+  color: var(--ink);
+}
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.play {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+.play:hover,
+.play:focus-visible { background: var(--pink-2); outline: none; }
+.seek {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  accent-color: var(--pink-1);
+  cursor: pointer;
+}
+.seek:disabled { cursor: default; opacity: 0.5; }
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.time {
+  font-family: var(--font-body);
+  font-size: 18px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.volumeRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.volume {
+  width: 88px;
+  height: 36px;
+  accent-color: var(--ink);
+  cursor: pointer;
+}
+.error {
+  margin: 0;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  font-family: var(--font-body);
+  font-size: 20px;
+  color: var(--pink-1);
+}
+/* the radio icon gently bobs while music plays */
+.on svg { animation: bob 0.8s steps(2) infinite; }
+@keyframes bob { 50% { transform: translateY(-2px); } }
+@media (prefers-reduced-motion: reduce) {
+  .on svg { animation: none; }
+}
+@media (max-width: 767px) {
+  .panel { width: calc(100vw - 32px); }
+}
+
