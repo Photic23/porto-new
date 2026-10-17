@@ -27,10 +27,10 @@ describe('TitleOverlay', () => {
 
 describe('Menu', () => {
   const state = { selected: 'bio', open: null } as const
-  it('renders four buttons in order with selection marker', () => {
+  it('renders six buttons in order with selection marker', () => {
     render(<Menu state={state} dispatch={() => {}} visible />)
     const btns = screen.getAllByRole('button')
-    expect(btns.map((b) => b.textContent)).toEqual(['▶ bio', 'education', 'experience', 'achievement'])
+    expect(btns.map((b) => b.textContent)).toEqual(['▶ bio', 'education', 'experience', 'organization', 'projects', 'achievement'])
   })
   it('click dispatches open', () => {
     const dispatch = vi.fn()

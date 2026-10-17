@@ -4,7 +4,7 @@ import { SECTIONS, sectionEntries } from './sections'
 
 describe('content', () => {
   it('has the section list', () => {
-    expect(SECTIONS).toEqual(['bio', 'education', 'experience', 'achievement'])
+    expect(SECTIONS).toEqual(['bio', 'education', 'experience', 'organization', 'projects', 'achievement'])
   })
   it('has name and tagline', () => {
     expect(content.name).toBe('kyse')

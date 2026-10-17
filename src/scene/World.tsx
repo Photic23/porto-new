@@ -5,7 +5,7 @@ import { useFrame, type ThreeEvent } from '@react-three/fiber'
 import { Html } from '@react-three/drei'
 import * as THREE from 'three'
 import type { SectionId } from '@/content/types'
-import { NAV_POLAROIDS, type NavPolaroid } from './notebookNav'
+import { NAV_POLAROIDS, POLAROID_SIZE, type NavPolaroid } from './notebookNav'
 import styles from './notebook.module.css'
 import { mulberry32 } from './rng'
 import { sceneConfig, type Tier } from './sceneConfig'
@@ -269,15 +269,15 @@ const Polaroid = memo(function Polaroid({
       onPointerOut={() => setHover(false)}
     >
       <mesh>
-        <boxGeometry args={[1.1, 0.03, 1.3]} />
+        <boxGeometry args={[POLAROID_SIZE[0], 0.03, POLAROID_SIZE[1]]} />
         <meshLambertMaterial color="#ffffff" />
       </mesh>
-      <mesh position={[0, 0.005, -0.12]}>
-        <boxGeometry args={[0.92, 0.035, 0.85]} />
+      <mesh position={[0, 0.005, -0.1]}>
+        <boxGeometry args={[POLAROID_SIZE[0] - 0.15, 0.035, POLAROID_SIZE[1] - 0.4]} />
         <meshLambertMaterial color={p.color} />
       </mesh>
       {enabled && (
-        <Html position={[0, 0.05, 0.48]} center zIndexRange={[5, 0]}>
+        <Html position={[0, 0.05, POLAROID_SIZE[1] / 2 - 0.13]} center zIndexRange={[5, 0]}>
           <button
             type="button"
             className={styles.caption}

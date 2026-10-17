@@ -23,7 +23,6 @@ export const content: Content = {
     },
   ],
   experience: [
-    // formal
     {
       title: 'Project Assistant',
       org: 'Faculty of Computer Science, Universitas Indonesia',
@@ -55,7 +54,8 @@ export const content: Content = {
       description:
         'Scored assignments, answered questions about the lectures and assignments, and helped students with their assignments.',
     },
-    // organizational
+  ],
+  organization: [
     {
       title: 'Team Member of Talent Intelligence',
       org: 'AIESEC Universitas Indonesia',
@@ -69,7 +69,8 @@ export const content: Content = {
       date: 'Feb 2022 - Jul 2023',
       description: 'Assisted the operational processes of the Network, Security, and OS SIG of RISTEK Fasilkom UI.',
     },
-    // projects
+  ],
+  projects: [
     {
       title: 'Invotrax: backend, frontend & DevOps',
       org: 'Inventory management app for PT Karya Bersama Pinto',

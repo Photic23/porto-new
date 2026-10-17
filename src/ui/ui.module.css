@@ -106,10 +106,10 @@
   right: 16px;
   bottom: 16px;
   margin: 0 auto;
-  max-width: 480px;
+  max-width: 720px;
   /* slim backup bar: the polaroids on the book are the main way in */
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 4px;
   padding: 4px;
   background: var(--paper);
@@ -195,8 +195,9 @@
 .empty { margin: 0; }
 
 @media (max-width: 767px) {
-  .menu { bottom: calc(16px + 48px + 8px); }
-  .bookHint { bottom: calc(16px + 48px + 8px + 58px + 10px); font-size: 20px; }
+  .menu { bottom: calc(16px + 48px + 8px); grid-template-columns: repeat(3, 1fr); }
+  /* menu is two rows here (2 x 44px + gap + padding + border) */
+  .bookHint { bottom: calc(16px + 48px + 8px + 106px + 10px); font-size: 20px; }
   .menuItem { font-size: 13px; padding: 4px 2px; }
   .page { bottom: calc(16px + 48px + 8px); max-height: calc(100dvh - 120px); }
 }

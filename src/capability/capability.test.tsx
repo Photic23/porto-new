@@ -48,10 +48,10 @@ describe('usePrefersReducedMotion', () => {
 })
 
 describe('FallbackPage', () => {
-  it('shows the title and the four section headings in order', () => {
+  it('shows the title and the six section headings in order', () => {
     render(<FallbackPage />)
     expect(screen.getByText("hi, i'm kyse")).toBeInTheDocument()
     const heads = screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent)
-    expect(heads).toEqual(['bio', 'education', 'experience', 'achievement'])
+    expect(heads).toEqual(['bio', 'education', 'experience', 'organization', 'projects', 'achievement'])
   })
 })

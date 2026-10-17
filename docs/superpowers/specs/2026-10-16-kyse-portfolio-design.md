@@ -49,7 +49,7 @@ A working throwaway spike of the scene exists at `.superpowers/brainstorm/377-17
 
 ### 3. The notebook (scroll = end)
 - Camera settles above an **open notebook lying in the grass** (pink covers, cream pages, a few polaroids on the pages).
-- A game-style menu appears with four sections: **bio · education · experience · achievement**. The selected item is marked with `▶`.
+- A game-style menu appears with four sections: **bio · education · experience · organization · projects · achievement**. The selected item is marked with `▶`.
 
 ### 4. Opening a section *(builder's/Claude's call, agreed in principle)*
 - Choosing a section moves the camera in closer to the notebook. The section's content appears **on the notebook page** in pixel fonts. The 3D scene stays visible; no modal window.

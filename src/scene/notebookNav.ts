@@ -10,11 +10,16 @@ export interface NavPolaroid {
   color: string
 }
 
-// Short captions (bio, experience) sit near the spine and long ones (education,
-// achievement) at the outer edges, so captions don't collide on small screens.
+/** Polaroid footprint on the page: [width (x), depth (z)]. */
+export const POLAROID_SIZE: readonly [number, number] = [0.95, 1.1]
+
+// Three rows per page, zig-zagging between the spine and the outer edge so neither
+// the photos nor their captions collide on small screens.
 export const NAV_POLAROIDS: readonly NavPolaroid[] = [
-  { id: 'bio', pos: [-1.1, 0.22, -0.8], rot: 0.12, color: '#ffb8c6' },
-  { id: 'education', pos: [-2.0, 0.22, 0.7], rot: -0.15, color: '#9bd4f7' },
-  { id: 'experience', pos: [1.1, 0.22, -0.8], rot: -0.1, color: '#a6de8f' },
-  { id: 'achievement', pos: [2.0, 0.22, 0.7], rot: 0.14, color: '#ffe27a' },
+  { id: 'bio', pos: [-1.0, 0.22, -1.2], rot: 0.1, color: '#ffb8c6' },
+  { id: 'education', pos: [-2.0, 0.22, 0], rot: -0.12, color: '#9bd4f7' },
+  { id: 'experience', pos: [-1.3, 0.22, 1.2], rot: 0.08, color: '#a6de8f' },
+  { id: 'organization', pos: [1.4, 0.22, -1.2], rot: -0.1, color: '#c9b6f2' },
+  { id: 'projects', pos: [2.0, 0.22, 0], rot: 0.12, color: '#ffc89a' },
+  { id: 'achievement', pos: [1.3, 0.22, 1.2], rot: -0.08, color: '#ffe27a' },
 ]
