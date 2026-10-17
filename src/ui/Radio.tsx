@@ -1,8 +1,7 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { content } from '@/content/content'
-import { spotifyEmbedUrl, spotifyUri } from '@/content/spotify'
-import { loadSpotifyIframeApi } from '@/content/spotifyApi'
+import { soundcloudEmbedUrl } from '@/content/soundcloud'
 import styles from './radio.module.css'
 
 function RadioIcon() {
@@ -20,7 +19,8 @@ function RadioIcon() {
   )
 }
 
-const EMBED_TITLE = 'Get Your Wish — Porter Robinson on Spotify'
+const { music } = content
+const EMBED_TITLE = `${music.title} — ${music.artist} on SoundCloud`
 
 export function Radio({
   initialOpen = false,
@@ -28,7 +28,7 @@ export function Radio({
   collapse = false,
 }: {
   initialOpen?: boolean
-  /** Ask Spotify's player to start as soon as it is ready (used right after "press start"). */
+  /** Start playing as soon as the player loads (used right after "press start"). */
   autoPlay?: boolean
   /** When this turns on, fold the panel away (the player keeps playing). */
   collapse?: boolean
@@ -41,70 +41,28 @@ export function Radio({
     if (collapse) setOpen(false)
   }
   const [mounted, setMounted] = useState(initialOpen)
-  const [plain, setPlain] = useState(false) // API unavailable: use the plain embed
-  const host = useRef<HTMLDivElement>(null)
   const toggle = () => {
     setOpen((o) => !o)
     setMounted(true)
   }
-
-  // Warm the API up early so it is ready by the time the visitor presses start.
-  useEffect(() => {
-    loadSpotifyIframeApi().catch(() => {})
-  }, [])
-
-  useEffect(() => {
-    const uri = spotifyUri(content.spotifyTrackUrl)
-    const node = host.current
-    if (!mounted || !uri || !node) return
-    let cancelled = false
-    let controller: { destroy(): void } | null = null
-    loadSpotifyIframeApi()
-      .then((api) => {
-        if (cancelled) return
-        // Spotify replaces this element with its iframe; React never renders inside host.
-        const el = document.createElement('div')
-        node.appendChild(el)
-        api.createController(el, { uri, width: '100%', height: 80 }, (c) => {
-          if (cancelled) return c.destroy()
-          controller = c
-          node.querySelector('iframe')?.setAttribute('title', EMBED_TITLE)
-          if (autoPlay) c.addListener('ready', () => c.play())
-        })
-      })
-      .catch(() => {
-        if (!cancelled) setPlain(true)
-      })
-    return () => {
-      cancelled = true
-      controller?.destroy()
-      node.textContent = ''
-    }
-  }, [mounted, autoPlay])
+  // SoundCloud's widget honours auto_play once the visitor has clicked on the page.
+  const src = soundcloudEmbedUrl(music.url, autoPlay)
   return (
     <div className={styles.radio}>
       {mounted && (
         <div className={styles.panel} hidden={!open} aria-hidden={!open}>
-          {plain ? (
+          {src && (
             <iframe
               title={EMBED_TITLE}
-              src={spotifyEmbedUrl(content.spotifyTrackUrl)}
+              src={src}
               width="100%"
-              height="80"
-              allow="autoplay; encrypted-media; clipboard-write; fullscreen; picture-in-picture"
-              loading="lazy"
-              style={{ border: 0, width: '100%' }}
+              height="166"
+              allow="autoplay"
+              style={{ border: 0, width: '100%', display: 'block' }}
             />
-          ) : (
-            <div ref={host} className={styles.embed} />
           )}
-          <a
-            className={styles.fallback}
-            href={content.spotifyTrackUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            listen on spotify ↗
+          <a className={styles.fallback} href={music.url} target="_blank" rel="noopener noreferrer">
+            listen on soundcloud ↗
           </a>
         </div>
       )}

@@ -52,5 +52,3 @@
   .panel { width: calc(100vw - 32px); }
 }
 
-.embed { min-height: 80px; }
-.embed iframe { display: block; width: 100%; border: 0; }

@@ -25,5 +25,5 @@ export interface Content {
   projects: Entry[]
   achievement: Entry[]
   socials: Social[]
-  spotifyTrackUrl: string
+  music: { title: string; artist: string; url: string }
 }

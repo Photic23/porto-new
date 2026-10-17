@@ -19,7 +19,8 @@ describe('content', () => {
     expect(sectionEntries(content, 'experience')).toBe(content.experience)
     expect(sectionEntries(content, 'bio')).toEqual([])
   })
-  it('has a spotify url', () => {
-    expect(content.spotifyTrackUrl).toMatch(/^https:\/\/open\.spotify\.com\/(track|album)\/[A-Za-z0-9]+/)
+  it('plays Mirror from SoundCloud', () => {
+    expect(content.music.title).toBe('Mirror')
+    expect(content.music.url).toMatch(/^https:\/\/soundcloud\.com\/[\w-]+\/[\w-]+$/)
   })
 })

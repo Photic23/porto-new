@@ -31,10 +31,6 @@ vi.mock('@/capability/usePrefersReducedMotion', () => ({
   usePrefersReducedMotion: () => reduced(),
 }))
 
-vi.mock('@/content/spotifyApi', () => ({
-  loadSpotifyIframeApi: () => Promise.reject(new Error('no api in tests')),
-}))
-
 import { Experience } from './Experience'
 
 function setScroll(y: number) {

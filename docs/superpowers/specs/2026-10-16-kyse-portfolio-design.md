@@ -65,11 +65,10 @@ A working throwaway spike of the scene exists at `.superpowers/brainstorm/377-17
 - How the text is put "on the page" (HTML overlay positioned over the notebook vs. text rendered into the 3D scene) is the builder's call. Legibility and accessibility come first, so an HTML overlay is preferred.
 
 ### Music
-- A small **pixel-art radio/cassette player** in a corner wraps an **official Spotify embed** of *Get Your Wish* (Porter Robinson, *Nurture*). The builder looks up the track's Spotify URL.
-- It plays only on user interaction (browser autoplay rules). No audio is hosted on the site.
-- Known and accepted: visitors not logged in to Spotify hear a ~30-second preview.
-- *(Updated 2026-10-16, at kyse's request)* The site opens on a **▶ press start** gate. Pressing it opens the radio and uses Spotify's official iFrame API to call `play()` once the player is ready, so the song starts on that first click. The embed stays visible, and Spotify's own controls stay in charge after that. If the API script is blocked or times out (8s), the plain embed is used and the visitor presses Spotify's play button themselves.
-- *(Claude's call)* The Spotify embed stays **visible**, never hidden or replaced by custom buttons. This keeps within Spotify's embed terms and avoids an extra script. Closed, the corner shows only a small pixel radio icon. Clicking it opens a small cream pixel-framed panel with the real compact Spotify embed inside, which starts playing from there. Clicking the radio again collapses the panel. Spotify's player keeps playing while collapsed if the iframe stays mounted, so keep it mounted once opened. On mobile the panel opens above the radio icon at full width minus the gutters.
+- A small **pixel-art radio** in the bottom-right corner wraps the **official SoundCloud widget** for *Mirror* (Porter Robinson, *Nurture*), from his official SoundCloud: https://soundcloud.com/porter-robinson/mirror. It plays the full track for everyone, with no login. *(Updated 2026-10-17, at kyse's request: was Spotify with Get Your Wish, which only played a 30-second preview to logged-out visitors.)*
+- The site opens on a **▶ press start** gate. Pressing it opens the radio with the widget's `auto_play=true`. The widget honours that once the visitor has clicked on the page, so the song starts on that first click. If a browser still blocks it, the visitor presses the widget's play button.
+- The widget stays **visible**, never hidden or replaced by custom controls. Closed, the corner shows only the radio icon, and clicking it opens a cream pixel-framed panel with the widget and a `listen on soundcloud ↗` link. The player stays mounted once opened, so music keeps playing when the panel folds. The panel also folds automatically when the notebook menu appears. On mobile it opens above the icon at full width minus the gutters.
+- No audio is hosted on the site.
 
 ## Visual system
 
