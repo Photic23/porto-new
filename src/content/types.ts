@@ -1,4 +1,4 @@
-export type SectionId = 'bio' | 'education' | 'experience' | 'competition'
+export type SectionId = 'bio' | 'education' | 'experience' | 'achievement'
 
 export interface Entry {
   title: string
@@ -15,6 +15,6 @@ export interface Content {
   bio: string
   education: Entry[]
   experience: Entry[]
-  competition: Entry[]
+  achievement: Entry[]
   spotifyTrackUrl: string
 }

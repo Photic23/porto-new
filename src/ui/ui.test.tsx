@@ -30,13 +30,13 @@ describe('Menu', () => {
   it('renders four buttons in order with selection marker', () => {
     render(<Menu state={state} dispatch={() => {}} visible />)
     const btns = screen.getAllByRole('button')
-    expect(btns.map((b) => b.textContent)).toEqual(['▶ bio', 'education', 'experience', 'competition'])
+    expect(btns.map((b) => b.textContent)).toEqual(['▶ bio', 'education', 'experience', 'achievement'])
   })
   it('click dispatches open', () => {
     const dispatch = vi.fn()
     render(<Menu state={state} dispatch={dispatch} visible />)
-    fireEvent.click(screen.getByText('competition'))
-    expect(dispatch).toHaveBeenCalledWith({ type: 'open', id: 'competition' })
+    fireEvent.click(screen.getByText('achievement'))
+    expect(dispatch).toHaveBeenCalledWith({ type: 'open', id: 'achievement' })
   })
   it('keyboard moves and opens when visible', () => {
     const dispatch = vi.fn()
@@ -58,12 +58,12 @@ describe('Menu', () => {
   it('Enter on a focused button is left to native activation', () => {
     const dispatch = vi.fn()
     render(<Menu state={state} dispatch={dispatch} visible />)
-    const btn = screen.getByText('competition')
+    const btn = screen.getByText('achievement')
     btn.focus()
     expect(fireEvent.keyDown(btn, { key: 'Enter' })).toBe(true) // not preventDefault-ed
     expect(dispatch).not.toHaveBeenCalled()
     fireEvent.click(btn) // what native Enter activation produces
-    expect(dispatch).toHaveBeenCalledWith({ type: 'open', id: 'competition' })
+    expect(dispatch).toHaveBeenCalledWith({ type: 'open', id: 'achievement' })
   })
   it('Enter with a link focused does not dispatch', () => {
     const dispatch = vi.fn()

@@ -52,6 +52,6 @@ describe('FallbackPage', () => {
     render(<FallbackPage />)
     expect(screen.getByText("hi, i'm kyse")).toBeInTheDocument()
     const heads = screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent)
-    expect(heads).toEqual(['bio', 'education', 'experience', 'competition'])
+    expect(heads).toEqual(['bio', 'education', 'experience', 'achievement'])
   })
 })

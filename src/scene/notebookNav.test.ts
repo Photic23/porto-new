@@ -6,12 +6,12 @@ describe('NAV_POLAROIDS', () => {
   it('has one polaroid per section, in menu order', () => {
     expect(NAV_POLAROIDS.map((p) => p.id)).toEqual([...SECTIONS])
   })
-  it('puts bio and education on the left page, experience and competition on the right', () => {
+  it('puts bio and education on the left page, experience and achievement on the right', () => {
     const x = Object.fromEntries(NAV_POLAROIDS.map((p) => [p.id, p.pos[0]]))
     expect(x.bio).toBeLessThan(0)
     expect(x.education).toBeLessThan(0)
     expect(x.experience).toBeGreaterThan(0)
-    expect(x.competition).toBeGreaterThan(0)
+    expect(x.achievement).toBeGreaterThan(0)
   })
   it('keeps every polaroid inside its page (pages are 2.85 x 3.85, spine at x=0)', () => {
     for (const p of NAV_POLAROIDS) {

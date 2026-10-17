@@ -4,14 +4,14 @@ import { SECTIONS, sectionEntries } from './sections'
 
 describe('content', () => {
   it('has the section list', () => {
-    expect(SECTIONS).toEqual(['bio', 'education', 'experience', 'competition'])
+    expect(SECTIONS).toEqual(['bio', 'education', 'experience', 'achievement'])
   })
   it('has name and tagline', () => {
     expect(content.name).toBe('kyse')
     expect(content.tagline).toBe("i write software & make little things")
   })
   it('every entry has a title', () => {
-    for (const list of [content.education, content.experience, content.competition]) {
+    for (const list of [content.education, content.experience, content.achievement]) {
       for (const e of list) expect(e.title.length).toBeGreaterThan(0)
     }
   })

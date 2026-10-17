@@ -100,7 +100,7 @@ export const content: Content = {
       link: 'https://github.com/Photic23/FE-Porto',
     },
   ],
-  competition: [
+  achievement: [
     {
       title: 'National Cyber Week CTF 2024 Finalist',
       org: 'BINUS University',

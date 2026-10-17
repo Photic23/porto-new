@@ -6,16 +6,16 @@ describe('uiReducer', () => {
   it('move +1 from bio goes to education', () => {
     expect(uiReducer(initialUI, { type: 'move', dir: 1 }).selected).toBe('education')
   })
-  it('move -1 from bio wraps to competition', () => {
-    expect(uiReducer(initialUI, { type: 'move', dir: -1 }).selected).toBe('competition')
+  it('move -1 from bio wraps to achievement', () => {
+    expect(uiReducer(initialUI, { type: 'move', dir: -1 }).selected).toBe('achievement')
   })
   it('open without id opens selected', () => {
     const s = uiReducer({ selected: 'experience', open: null }, { type: 'open' })
     expect(s).toEqual({ selected: 'experience', open: 'experience' })
   })
   it('open with id sets both', () => {
-    const s = uiReducer(initialUI, { type: 'open', id: 'competition' })
-    expect(s).toEqual({ selected: 'competition', open: 'competition' })
+    const s = uiReducer(initialUI, { type: 'open', id: 'achievement' })
+    expect(s).toEqual({ selected: 'achievement', open: 'achievement' })
   })
   it('close nulls open, keeps selected', () => {
     const s = uiReducer({ selected: 'education', open: 'education' }, { type: 'close' })

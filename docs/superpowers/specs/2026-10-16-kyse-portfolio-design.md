@@ -14,14 +14,14 @@ A working throwaway spike of the scene exists at `.superpowers/brainstorm/377-17
 ## Goals
 
 - Opening the site feels like the title screen of a cozy game.
-- Friends can read kyse's **bio, education, experience and competitions** easily.
+- Friends can read kyse's **bio, education, experience and achievements** easily.
 - Content is easy to update without touching 3D code.
 - Deploys on Vercel.
 
 ## Non-goals (for v1)
 
 - Competition certificates (planned later, not in v1).
-- A separate "projects/code" section. Projects go inside experience/competition entries.
+- A separate "projects/code" section. Projects go inside experience/achievement entries.
 - CMS, blog, contact forms, analytics.
 - Hosting any audio files.
 
@@ -49,7 +49,7 @@ A working throwaway spike of the scene exists at `.superpowers/brainstorm/377-17
 
 ### 3. The notebook (scroll = end)
 - Camera settles above an **open notebook lying in the grass** (pink covers, cream pages, a few polaroids on the pages).
-- A game-style menu appears with four sections: **bio · education · experience · competition**. The selected item is marked with `▶`.
+- A game-style menu appears with four sections: **bio · education · experience · achievement**. The selected item is marked with `▶`.
 
 ### 4. Opening a section *(builder's/Claude's call, agreed in principle)*
 - Choosing a section moves the camera in closer to the notebook. The section's content appears **on the notebook page** in pixel fonts. The 3D scene stays visible; no modal window.
@@ -80,10 +80,10 @@ A working throwaway spike of the scene exists at `.superpowers/brainstorm/377-17
 
 ## Content
 
-- All text content lives in **one file**, `content.json` (or a typed `content.ts`; builder's call), with `bio` and lists for `education`, `experience` and `competition`.
+- All text content lives in **one file**, `content.json` (or a typed `content.ts`; builder's call), with `bio` and lists for `education`, `experience` and `achievement`.
 - Entry shape is up to the builder. Suggested minimum: title, organisation/place, date or date range, short description, optional link.
 - Use **placeholder entries** until kyse supplies real content.
-- Structure entries so a `certificate` field (image/link) can be added to competitions later without a redesign.
+- Structure entries so a `certificate` field (image/link) can be added to achievements later without a redesign.
 
 ## Tech (decided by kyse)
 
