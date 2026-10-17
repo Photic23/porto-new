@@ -12,6 +12,7 @@ import { PressStart } from '@/ui/PressStart'
 import { Radio } from '@/ui/Radio'
 import { SectionPage } from '@/ui/SectionPage'
 import { TitleOverlay } from '@/ui/TitleOverlay'
+import styles from '@/ui/ui.module.css'
 
 const SceneCanvas = dynamic(() => import('@/scene/SceneCanvas').then((m) => m.SceneCanvas), {
   ssr: false,
@@ -57,6 +58,9 @@ export function Experience() {
   const raw = useSyncExternalStore(subscribeScroll, getRawProgress, () => 0)
   const reduced = usePrefersReducedMotion()
   const [started, setStarted] = useState(false)
+  // Once a section has been opened the visitor has found the book: drop the hint.
+  const [explored, setExplored] = useState(false)
+  if (state.open && !explored) setExplored(true)
 
   const fallback = probed === false || lost
   useScrollLock(!started || (state.open !== null && !fallback))
@@ -89,6 +93,7 @@ export function Experience() {
       />
       <div style={{ height: spacer }} aria-hidden="true" />
       <TitleOverlay progress={progress} prompt={started} />
+      {atMenu && !explored && <div className={styles.bookHint}>▲ pick a photo on the notebook ▲</div>}
       <Menu
         state={state}
         dispatch={dispatch}

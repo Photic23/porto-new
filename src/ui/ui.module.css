@@ -54,6 +54,23 @@
 @media (prefers-reduced-motion: reduce) {
   .prompt { animation: none; }
 }
+/* "click the book" hint, just above the slim menu bar */
+.bookHint {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: calc(16px + 58px + 12px);
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 22px;
+  color: var(--paper);
+  text-shadow: 2px 2px 0 var(--shadow-1);
+  pointer-events: none;
+  animation: blink 1.2s steps(1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bookHint { animation: none; }
+}
 .pressStart {
   position: fixed;
   inset: 0;
@@ -179,6 +196,7 @@
 
 @media (max-width: 767px) {
   .menu { bottom: calc(16px + 48px + 8px); }
+  .bookHint { bottom: calc(16px + 48px + 8px + 58px + 10px); font-size: 20px; }
   .menuItem { font-size: 13px; padding: 4px 2px; }
   .page { bottom: calc(16px + 48px + 8px); max-height: calc(100dvh - 120px); }
 }

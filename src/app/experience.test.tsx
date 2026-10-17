@@ -242,4 +242,37 @@ describe('Experience', () => {
       expect(last().focus).toBe(1)
     })
   })
+
+  describe('book hint', () => {
+    const hint = () => screen.queryByText(/pick a photo on the notebook/)
+
+    it('shows at the notebook after start', async () => {
+      setScroll(2400)
+      render(<Experience />)
+      await screen.findByTestId('scene')
+      expect(hint()).toBeNull() // press start still up
+      await start()
+      await waitFor(() => expect(hint()).toBeTruthy())
+    })
+
+    it('is hidden up in the sky', async () => {
+      render(<Experience />)
+      await screen.findByTestId('scene')
+      await start()
+      expect(hint()).toBeNull()
+    })
+
+    it('goes away for good once a section has been opened', async () => {
+      setScroll(2400)
+      render(<Experience />)
+      await screen.findByTestId('scene')
+      await start()
+      await waitFor(() => expect(hint()).toBeTruthy())
+      act(() => (last().onSelectSection as (id: string) => void)('bio'))
+      expect(hint()).toBeNull()
+      fireEvent.keyDown(window, { key: 'Escape' })
+      expect(screen.getByRole('navigation')).toBeTruthy() // back at the menu
+      expect(hint()).toBeNull()
+    })
+  })
 })
