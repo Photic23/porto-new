@@ -1,7 +1,7 @@
 'use client'
-import { useState } from 'react'
+import { useState, useSyncExternalStore } from 'react'
 import { content } from '@/content/content'
-import { soundcloudEmbedUrl } from '@/content/soundcloud'
+import { getMusicState, setMusicVolume, subscribeMusic, toggleMusic } from '@/audio/music'
 import styles from './radio.module.css'
 
 function RadioIcon() {
@@ -20,56 +20,79 @@ function RadioIcon() {
 }
 
 const { music } = content
-const EMBED_TITLE = `${music.title} — ${music.artist} on SoundCloud`
+
+function PlayIcon({ playing }: { playing: boolean }) {
+  return (
+    <svg viewBox="0 0 8 8" width="20" height="20" shapeRendering="crispEdges" aria-hidden="true">
+      {playing ? (
+        <g fill="#5b4632">
+          <rect x="1" y="1" width="2" height="6" />
+          <rect x="5" y="1" width="2" height="6" />
+        </g>
+      ) : (
+        <g fill="#5b4632">
+          <rect x="2" y="1" width="1" height="6" />
+          <rect x="3" y="2" width="1" height="4" />
+          <rect x="4" y="2" width="1" height="4" />
+          <rect x="5" y="3" width="1" height="2" />
+          <rect x="6" y="3" width="1" height="2" />
+        </g>
+      )}
+    </svg>
+  )
+}
 
 export function Radio({
   initialOpen = false,
-  autoPlay = false,
   collapse = false,
 }: {
   initialOpen?: boolean
-  /** Start playing as soon as the player loads (used right after "press start"). */
-  autoPlay?: boolean
-  /** When this turns on, fold the panel away (the player keeps playing). */
+  /** When this turns on, fold the panel away (the music keeps playing). */
   collapse?: boolean
 }) {
-  // Already at the menu (e.g. reloaded at the bottom): load the player but keep it folded.
+  // Already at the menu (e.g. reloaded at the bottom): keep the panel folded.
   const [open, setOpen] = useState(initialOpen && !collapse)
   const [prevCollapse, setPrevCollapse] = useState(collapse)
   if (collapse !== prevCollapse) {
     setPrevCollapse(collapse)
     if (collapse) setOpen(false)
   }
-  const [mounted, setMounted] = useState(initialOpen)
-  const toggle = () => {
-    setOpen((o) => !o)
-    setMounted(true)
-  }
-  // SoundCloud's widget honours auto_play once the visitor has clicked on the page.
-  const src = soundcloudEmbedUrl(music.url, autoPlay)
+  const { playing, volume, error } = useSyncExternalStore(subscribeMusic, getMusicState, getMusicState)
   return (
     <div className={styles.radio}>
-      {mounted && (
-        <div className={styles.panel} hidden={!open} aria-hidden={!open}>
-          {src && (
-            <iframe
-              title={EMBED_TITLE}
-              src={src}
-              width="100%"
-              height="166"
-              allow="autoplay"
-              style={{ border: 0, width: '100%', display: 'block' }}
+      <div className={styles.panel} hidden={!open} aria-hidden={!open}>
+        <p className={styles.song}>
+          {music.title} — {music.artist}
+        </p>
+        {error ? (
+          <p className={styles.error}>song unavailable</p>
+        ) : (
+          <div className={styles.controls}>
+            <button
+              type="button"
+              className={styles.play}
+              onClick={toggleMusic}
+              aria-label={playing ? 'pause' : 'play'}
+            >
+              <PlayIcon playing={playing} />
+            </button>
+            <input
+              type="range"
+              className={styles.volume}
+              min={0}
+              max={1}
+              step={0.05}
+              value={volume}
+              onChange={(e) => setMusicVolume(Number(e.target.value))}
+              aria-label="volume"
             />
-          )}
-          <a className={styles.fallback} href={music.url} target="_blank" rel="noopener noreferrer">
-            listen on soundcloud ↗
-          </a>
-        </div>
-      )}
+          </div>
+        )}
+      </div>
       <button
         type="button"
-        className={styles.button}
-        onClick={toggle}
+        className={`${styles.button} ${playing ? styles.on : ''}`}
+        onClick={() => setOpen((o) => !o)}
         aria-label={open ? 'close radio' : 'open radio'}
         aria-expanded={open}
       >

@@ -65,10 +65,10 @@ A working throwaway spike of the scene exists at `.superpowers/brainstorm/377-17
 - How the text is put "on the page" (HTML overlay positioned over the notebook vs. text rendered into the 3D scene) is the builder's call. Legibility and accessibility come first, so an HTML overlay is preferred.
 
 ### Music
-- A small **pixel-art radio** in the bottom-right corner wraps the **official SoundCloud widget** for *Mirror* (Porter Robinson, *Nurture*), from his official SoundCloud: https://soundcloud.com/porter-robinson/mirror. It plays the full track for everyone, with no login. *(Updated 2026-10-17, at kyse's request: was Spotify with Get Your Wish, which only played a 30-second preview to logged-out visitors.)*
-- The site opens on a **▶ press start** gate. Pressing it opens the radio with the widget's `auto_play=true`. The widget honours that once the visitor has clicked on the page, so the song starts on that first click. If a browser still blocks it, the visitor presses the widget's play button.
-- The widget stays **visible**, never hidden or replaced by custom controls. Closed, the corner shows only the radio icon, and clicking it opens a cream pixel-framed panel with the widget and a `listen on soundcloud ↗` link. The player stays mounted once opened, so music keeps playing when the panel folds. The panel also folds automatically when the notebook menu appears. On mobile it opens above the icon at full width minus the gutters.
-- No audio is hosted on the site.
+- *(Updated 2026-10-17, at kyse's request, after Spotify and SoundCloud both cut logged-out visitors to 30-second previews)* The site **hosts the song itself**, the way guns.lol profiles do: *Mirror* (Porter Robinson) at `public/music/mirror.mp3`, played with one shared `<audio>` element (`src/audio/music.ts`). It loops, uses `preload="none"`, and nothing downloads until play.
+- **▶ press start** calls `play()` directly inside its click handler, which Safari requires, so the full song starts on that click everywhere.
+- The bottom-right **pixel radio** is now our own player. Its panel shows the song name, a pixel play/pause button and a volume slider, and the radio icon bobs while music plays. If the file is missing or broken it shows "song unavailable". The panel folds when the notebook menu appears, and the music keeps playing.
+- Known and accepted by kyse: serving a copyrighted track from the site risks a takedown request. Swapping the file for a licensed or royalty-free track is a one-line change in `content.ts`. Vercel Hobby serves `public/` from its CDN with 100 GB/month of transfer.
 
 ## Visual system
 

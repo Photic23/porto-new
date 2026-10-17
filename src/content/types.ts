@@ -25,5 +25,6 @@ export interface Content {
   projects: Entry[]
   achievement: Entry[]
   socials: Social[]
-  music: { title: string; artist: string; url: string }
+  /** `src` is a file under /public, e.g. '/music/mirror.mp3'. */
+  music: { title: string; artist: string; src: string }
 }

@@ -9,6 +9,7 @@ import { initialUI, uiReducer, useScrollLock } from '@/state/uiState'
 import { FallbackPage } from '@/ui/FallbackPage'
 import { Menu } from '@/ui/Menu'
 import { PressStart } from '@/ui/PressStart'
+import { playMusic } from '@/audio/music'
 import { Radio } from '@/ui/Radio'
 import { SectionPage } from '@/ui/SectionPage'
 import { Socials } from '@/ui/Socials'
@@ -70,7 +71,15 @@ export function Experience() {
 
   // Keep the spacer in the DOM while probing so scrollHeight is realistic.
   if (probed === null) return <div style={{ height: spacer }} aria-hidden="true" />
-  const gate = !started && <PressStart onStart={() => setStarted(true)} />
+  // play() must run inside the click itself (Safari), so start the song right here.
+  const gate = !started && (
+    <PressStart
+      onStart={() => {
+        void playMusic()
+        setStarted(true)
+      }}
+    />
+  )
   if (fallback)
     return (
       <>
@@ -115,7 +124,6 @@ export function Experience() {
       <Radio
         key={started ? 'on' : 'off'}
         initialOpen={started}
-        autoPlay={started}
         collapse={progress > 0.85}
       />
       {gate}

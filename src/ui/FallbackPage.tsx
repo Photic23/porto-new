@@ -26,7 +26,7 @@ export function FallbackPage({ radioOpen = false }: { radioOpen?: boolean }) {
         ))}
       </div>
       <Socials />
-      <Radio key={radioOpen ? 'on' : 'off'} initialOpen={radioOpen} autoPlay={radioOpen} />
+      <Radio key={radioOpen ? 'on' : 'off'} initialOpen={radioOpen} />
     </main>
   )
 }

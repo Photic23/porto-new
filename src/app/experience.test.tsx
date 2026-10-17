@@ -176,24 +176,26 @@ describe('Experience', () => {
       expect(screen.queryByText(/scroll to look down/)).toBeNull()
     })
 
-    it('starting unlocks scroll, opens the radio, and shows the scroll prompt', async () => {
-      const { container } = render(<Experience />)
+    it('starting plays the song inside the click, unlocks scroll, opens the radio', async () => {
+      render(<Experience />)
       await screen.findByTestId('scene')
-      expect(container.querySelector('iframe')).toBeNull()
+      vi.mocked(HTMLMediaElement.prototype.play).mockClear()
       await start()
+      expect(HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1)
       expect(screen.queryByRole('button', { name: /press start/ })).toBeNull()
       expect(document.documentElement.style.overflow).not.toBe('hidden')
       expect(screen.getByRole('button', { name: 'close radio' })).toBeTruthy()
-      await waitFor(() => expect(container.querySelector('iframe')).not.toBeNull())
       expect(screen.getByText(/scroll to look down/)).toBeTruthy()
     })
 
     it('gates the fallback page too, and opens its radio on start', async () => {
       hasWebGL.mockReturnValue(false)
-      const { container } = render(<Experience />)
+      render(<Experience />)
+      vi.mocked(HTMLMediaElement.prototype.play).mockClear()
       await start()
       expect(screen.getByRole('heading', { level: 2, name: 'education' })).toBeTruthy()
-      await waitFor(() => expect(container.querySelector('iframe')).not.toBeNull())
+      expect(HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1)
+      expect(screen.getByRole('button', { name: 'close radio' })).toBeTruthy()
       expect(document.documentElement.style.overflow).not.toBe('hidden')
     })
   

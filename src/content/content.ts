@@ -131,6 +131,6 @@ export const content: Content = {
   socials: [
     { platform: 'tiktok', label: 'TikTok', url: 'https://www.tiktok.com/@0xkyse' },
   ],
-  // Official upload on Porter Robinson's SoundCloud (full track, embeddable).
-  music: { title: 'Mirror', artist: 'Porter Robinson', url: 'https://soundcloud.com/porter-robinson/mirror' },
+  // Put the song at public/music/mirror.mp3 (about 96-128 kbps keeps it light).
+  music: { title: 'Mirror', artist: 'Porter Robinson', src: '/music/mirror.mp3' },
 }
