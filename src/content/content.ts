@@ -5,36 +5,42 @@ export const content: Content = {
   name: 'kyse',
   tagline: "i write software & make little things",
   bio:
-    'An Information Systems student at Universitas Indonesia, currently in my final year. ' +
+    "An Information Systems Graduate from Universitas Indonesia, currently a fulltime software engineer and lecturer's project assistant. " +
     'Motivated to create positive impact, learn and explore new experiences, earn new abilities, ' +
-    'improve my capabilities and broaden my knowledge. I also love reading manga or light novels in my free time.',
+    'improve my capabilities and broaden my knowledge. I also love solo travelling and manga/novel reading.',
   education: [
     {
       title: 'Bachelor of Information Systems',
       org: 'Universitas Indonesia',
-      date: '2022 - present',
-      description: 'Focus on software development.',
+      date: '2022 - 2026',
+      description: 'Specialized in software development.',
     },
     {
       title: 'Fast Offer International Japanese Language Program',
       org: 'Pusat Studi Jepang UI',
-      date: '2024 - present',
-      description: 'Currently in my 3rd semester of this program.',
+      date: '2024 - 2025',
+      description: 'Studied japanese equivalent to N5 level.',
     },
   ],
   experience: [
     // formal
     {
+      title: 'Project Assistant',
+      org: 'Faculty of Computer Science, Universitas Indonesia',
+      date: 'Nov 2026 - present',
+      description: "Assisted in the productionization of a lecturer's project.",
+    },
+    {
       title: 'Software Engineer',
       org: 'Sokratech',
       date: 'Dec 2025 - present',
-      description: 'Working on the risk decisioning platform.',
+      description: 'Working on the Fraud Detection System.',
     },
     {
       title: 'Software Engineer Intern',
       org: 'Sokratech',
       date: 'Jun 2025 - Dec 2025',
-      description: 'Worked on the risk decisioning platform.',
+      description: 'Worked on Fraud Detection System and KYC prototype.',
     },
     {
       title: 'Frontend Developer Intern',

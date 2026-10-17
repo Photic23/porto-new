@@ -89,21 +89,23 @@
   right: 16px;
   bottom: 16px;
   margin: 0 auto;
-  max-width: 640px;
+  max-width: 480px;
+  /* slim backup bar: the polaroids on the book are the main way in */
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 8px;
-  padding: 8px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  padding: 4px;
   background: var(--paper);
   border: 3px solid var(--ink);
   box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.25);
 }
 .menuItem {
   min-height: 44px;
-  padding: 8px 12px;
+  padding: 4px 6px;
   font-family: var(--font-title);
-  font-size: 18px;
-  text-align: left;
+  font-size: 15px;
+  text-align: center;
+  white-space: nowrap;
   color: var(--ink);
   background: var(--paper);
   border: 3px solid transparent;
@@ -177,5 +179,6 @@
 
 @media (max-width: 767px) {
   .menu { bottom: calc(16px + 48px + 8px); }
+  .menuItem { font-size: 13px; padding: 4px 2px; }
   .page { bottom: calc(16px + 48px + 8px); max-height: calc(100dvh - 120px); }
 }

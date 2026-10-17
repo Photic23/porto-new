@@ -1,8 +1,12 @@
 'use client'
 
-import { memo, useEffect, useLayoutEffect, useMemo, useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
+import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useFrame, type ThreeEvent } from '@react-three/fiber'
+import { Html } from '@react-three/drei'
 import * as THREE from 'three'
+import type { SectionId } from '@/content/types'
+import { NAV_POLAROIDS, type NavPolaroid } from './notebookNav'
+import styles from './notebook.module.css'
 import { mulberry32 } from './rng'
 import { sceneConfig, type Tier } from './sceneConfig'
 import { groundHeight, NOTEBOOK_POS } from './terrain'
@@ -231,13 +235,72 @@ const Clouds = memo(function Clouds({ count, reducedMotion }: { count: number; r
   )
 })
 
-const POLAROIDS: { pos: [number, number, number]; rot: number; color: string }[] = [
-  { pos: [-2.2, 0.22, -0.8], rot: 0.15, color: '#9bd4f7' },
-  { pos: [-1.0, 0.22, 0.7], rot: -0.2, color: '#a6de8f' },
-  { pos: [1.6, 0.22, -0.6], rot: 0.1, color: '#ffb8c6' },
-]
+type SelectSection = (id: SectionId) => void
 
-const Notebook = memo(function Notebook() {
+// A section's polaroid: click the photo or its caption to open the section.
+const Polaroid = memo(function Polaroid({
+  p,
+  enabled,
+  onSelect,
+}: {
+  p: NavPolaroid
+  enabled: boolean
+  onSelect: SelectSection
+}) {
+  const [hover, setHover] = useState(false)
+  const hot = enabled && hover
+  useEffect(() => {
+    if (!hot) return
+    document.body.style.cursor = 'pointer'
+    return () => {
+      document.body.style.cursor = ''
+    }
+  }, [hot])
+  const select = (e: ThreeEvent<MouseEvent>) => {
+    e.stopPropagation()
+    onSelect(p.id)
+  }
+  return (
+    <group
+      position={[p.pos[0], p.pos[1] + (hot ? 0.12 : 0), p.pos[2]]}
+      rotation={[0, p.rot, 0]}
+      onClick={enabled ? select : undefined}
+      onPointerOver={enabled ? (e) => (e.stopPropagation(), setHover(true)) : undefined}
+      onPointerOut={() => setHover(false)}
+    >
+      <mesh>
+        <boxGeometry args={[1.1, 0.03, 1.3]} />
+        <meshLambertMaterial color="#ffffff" />
+      </mesh>
+      <mesh position={[0, 0.005, -0.12]}>
+        <boxGeometry args={[0.92, 0.035, 0.85]} />
+        <meshLambertMaterial color={p.color} />
+      </mesh>
+      {enabled && (
+        <Html position={[0, 0.05, 0.48]} center zIndexRange={[5, 0]}>
+          <button
+            type="button"
+            className={styles.caption}
+            onClick={(e) => {
+              e.stopPropagation() // don't also trigger the 3D click underneath
+              onSelect(p.id)
+            }}
+          >
+            <span className={styles.label}>{p.id}</span>
+          </button>
+        </Html>
+      )}
+    </group>
+  )
+})
+
+const Notebook = memo(function Notebook({
+  navEnabled,
+  onSelectSection,
+}: {
+  navEnabled: boolean
+  onSelectSection: SelectSection
+}) {
   return (
     // Faces the camera square-on so both pages read the same size; pages tilt up
     // from the spine (like a real open book) so their outer edges stay above the grass.
@@ -253,17 +316,8 @@ const Notebook = memo(function Notebook() {
             <meshLambertMaterial color="#fbf7ee" />
           </mesh>
           {/* polaroids ride on their page so they follow its tilt */}
-          {POLAROIDS.filter((p) => Math.sign(p.pos[0]) === side).map((p) => (
-            <group key={p.color} position={p.pos} rotation={[0, p.rot, 0]}>
-              <mesh>
-                <boxGeometry args={[0.9, 0.03, 1.05]} />
-                <meshLambertMaterial color="#ffffff" />
-              </mesh>
-              <mesh position={[0, 0.005, -0.1]}>
-                <boxGeometry args={[0.75, 0.035, 0.7]} />
-                <meshLambertMaterial color={p.color} />
-              </mesh>
-            </group>
+          {NAV_POLAROIDS.filter((p) => Math.sign(p.pos[0]) === side).map((p) => (
+            <Polaroid key={p.id} p={p} enabled={navEnabled} onSelect={onSelectSection} />
           ))}
         </group>
       ))}
@@ -271,7 +325,17 @@ const Notebook = memo(function Notebook() {
   )
 })
 
-export const World = memo(function World({ tier, reducedMotion }: { tier: Tier; reducedMotion: boolean }) {
+export const World = memo(function World({
+  tier,
+  reducedMotion,
+  navEnabled,
+  onSelectSection,
+}: {
+  tier: Tier
+  reducedMotion: boolean
+  navEnabled: boolean
+  onSelectSection: SelectSection
+}) {
   const cfg = sceneConfig(tier)
   return (
     <>
@@ -283,7 +347,7 @@ export const World = memo(function World({ tier, reducedMotion }: { tier: Tier; 
       <Trees count={cfg.trees} />
       <Flowers count={cfg.flowers} />
       <Clouds count={cfg.clouds} reducedMotion={reducedMotion} />
-      <Notebook />
+      <Notebook navEnabled={navEnabled} onSelectSection={onSelectSection} />
     </>
   )
 })

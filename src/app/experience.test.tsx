@@ -212,4 +212,34 @@ describe('Experience', () => {
       expect(screen.getByRole('button', { name: 'open radio' })).toBeTruthy()
     })
   })
+
+  describe('book navigation', () => {
+    it('enables the polaroids only at the notebook, after start, with no section open', async () => {
+      setScroll(2400)
+      render(<Experience />)
+      await screen.findByTestId('scene')
+      expect(last().navEnabled).toBe(false) // press start still showing
+      await start()
+      await waitFor(() => expect(last().navEnabled).toBe(true))
+      fireEvent.click(screen.getByRole('button', { name: /experience/ }))
+      expect(last().navEnabled).toBe(false) // section open
+    })
+
+    it('is disabled up in the sky', async () => {
+      render(<Experience />)
+      await screen.findByTestId('scene')
+      await start()
+      expect(last().navEnabled).toBe(false)
+    })
+
+    it('clicking a polaroid opens its section', async () => {
+      setScroll(2400)
+      render(<Experience />)
+      await screen.findByTestId('scene')
+      await start()
+      act(() => (last().onSelectSection as (id: string) => void)('competition'))
+      expect(screen.getByRole('heading', { name: 'competition' })).toBeTruthy()
+      expect(last().focus).toBe(1)
+    })
+  })
 })

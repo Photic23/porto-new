@@ -6,15 +6,19 @@ import * as THREE from 'three'
 import { cameraPose, fitToAspect } from './cameraPath'
 import { pixelSizeFor, tierFor, type Tier } from './sceneConfig'
 import { World } from './World'
+import type { SectionId } from '@/content/types'
 
 interface Props {
   progress: number
   focus: number
   reducedMotion: boolean
   onContextLost: () => void
+  /** Polaroids on the notebook are clickable only while this is on. */
+  navEnabled: boolean
+  onSelectSection: (id: SectionId) => void
 }
 
-function CameraRig({ progress, focus, reducedMotion }: Omit<Props, 'onContextLost'>) {
+function CameraRig({ progress, focus, reducedMotion }: Pick<Props, 'progress' | 'focus' | 'reducedMotion'>) {
   const camera = useThree((s) => s.camera)
   const aspect = useThree((s) => s.size.width / s.size.height)
   const focusRef = useRef(focus)
@@ -38,7 +42,14 @@ function CameraRig({ progress, focus, reducedMotion }: Omit<Props, 'onContextLos
   return null
 }
 
-export function SceneCanvas({ progress, focus, reducedMotion, onContextLost }: Props) {
+export function SceneCanvas({
+  progress,
+  focus,
+  reducedMotion,
+  onContextLost,
+  navEnabled,
+  onSelectSection,
+}: Props) {
   const [tier, setTier] = useState<Tier | null>(null)
   const cleanup = useRef<(() => void) | null>(null)
   const lostRef = useRef(onContextLost)
@@ -65,6 +76,9 @@ export function SceneCanvas({ progress, focus, reducedMotion, onContextLost }: P
       flat
       camera={{ fov: 55, near: 0.1, far: 400, position: [0, 6, 14] }}
       style={{ position: 'fixed', inset: 0, imageRendering: 'pixelated' }}
+      // The scroll spacer sits on top of the fixed canvas, so listen on the body instead.
+      eventSource={document.body}
+      eventPrefix="client"
       onCreated={({ gl }) => {
         const el = gl.domElement
         const handler = (e: Event) => {
@@ -76,7 +90,12 @@ export function SceneCanvas({ progress, focus, reducedMotion, onContextLost }: P
       }}
     >
       <CameraRig progress={progress} focus={focus} reducedMotion={reducedMotion} />
-      <World tier={tier} reducedMotion={reducedMotion} />
+      <World
+        tier={tier}
+        reducedMotion={reducedMotion}
+        navEnabled={navEnabled}
+        onSelectSection={onSelectSection}
+      />
     </Canvas>
   )
 }

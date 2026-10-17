@@ -53,6 +53,7 @@ export function Experience() {
   const [state, dispatch] = useReducer(uiReducer, initialUI)
   const [restoreId, setRestoreId] = useState<SectionId | null>(null)
   const clearRestore = useCallback(() => setRestoreId(null), [])
+  const openSection = useCallback((id: SectionId) => dispatch({ type: 'open', id }), [])
   const raw = useSyncExternalStore(subscribeScroll, getRawProgress, () => 0)
   const reduced = usePrefersReducedMotion()
   const [started, setStarted] = useState(false)
@@ -74,6 +75,7 @@ export function Experience() {
     )
 
   const progress = reduced ? 1 : easeInOutQuad(raw)
+  const atMenu = started && progress > 0.85 && state.open === null
 
   return (
     <>
@@ -82,13 +84,15 @@ export function Experience() {
         focus={state.open ? 1 : 0}
         reducedMotion={reduced}
         onContextLost={() => setLost(true)}
+        navEnabled={atMenu}
+        onSelectSection={openSection}
       />
       <div style={{ height: spacer }} aria-hidden="true" />
       <TitleOverlay progress={progress} prompt={started} />
       <Menu
         state={state}
         dispatch={dispatch}
-        visible={started && progress > 0.85 && state.open === null}
+        visible={atMenu}
         focusId={restoreId}
         onFocused={clearRestore}
       />
