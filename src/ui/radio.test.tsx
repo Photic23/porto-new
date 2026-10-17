@@ -60,4 +60,24 @@ describe('Radio', () => {
     render(<Radio initialOpen collapse />)
     expect(screen.getByRole('button', { name: 'open radio' })).toBeInTheDocument()
   })
+
+  it('has a progress bar that starts at 0, shows the time, and seeks', () => {
+    render(<Radio initialOpen />)
+    const a = getAudio()
+    Object.defineProperty(a, 'duration', { value: 245, configurable: true })
+    Object.defineProperty(a, 'currentTime', { value: 0, writable: true, configurable: true })
+    act(() => void a.dispatchEvent(new Event('loadedmetadata')))
+    const seek = screen.getByRole('slider', { name: 'seek' })
+    expect(seek).toHaveValue('0')
+    expect(seek).toHaveAttribute('max', '245')
+    expect(screen.getByText('0:00 / 4:05')).toBeInTheDocument()
+    fireEvent.change(seek, { target: { value: '120' } })
+    expect(a.currentTime).toBe(120)
+    expect(screen.getByText('2:00 / 4:05')).toBeInTheDocument()
+  })
+
+  it('keeps volume as its own, separately labelled slider', () => {
+    render(<Radio initialOpen />)
+    expect(screen.getByRole('slider', { name: 'volume' })).not.toBe(screen.getByRole('slider', { name: 'seek' }))
+  })
 })

@@ -1,7 +1,14 @@
 'use client'
 import { useState, useSyncExternalStore } from 'react'
 import { content } from '@/content/content'
-import { getMusicState, setMusicVolume, subscribeMusic, toggleMusic } from '@/audio/music'
+import {
+  formatTime,
+  getMusicState,
+  seekMusic,
+  setMusicVolume,
+  subscribeMusic,
+  toggleMusic,
+} from '@/audio/music'
 import styles from './radio.module.css'
 
 function RadioIcon() {
@@ -42,6 +49,21 @@ function PlayIcon({ playing }: { playing: boolean }) {
   )
 }
 
+function SpeakerIcon() {
+  return (
+    <svg viewBox="0 0 8 8" width="16" height="16" shapeRendering="crispEdges" aria-hidden="true">
+      <g fill="#5b4632">
+        <rect x="0" y="3" width="2" height="2" />
+        <rect x="2" y="2" width="1" height="4" />
+        <rect x="3" y="1" width="1" height="6" />
+        <rect x="5" y="2" width="1" height="1" />
+        <rect x="6" y="3" width="1" height="2" />
+        <rect x="5" y="5" width="1" height="1" />
+      </g>
+    </svg>
+  )
+}
+
 export function Radio({
   initialOpen = false,
   collapse = false,
@@ -57,7 +79,11 @@ export function Radio({
     setPrevCollapse(collapse)
     if (collapse) setOpen(false)
   }
-  const { playing, volume, error } = useSyncExternalStore(subscribeMusic, getMusicState, getMusicState)
+  const { playing, volume, error, currentTime, duration } = useSyncExternalStore(
+    subscribeMusic,
+    getMusicState,
+    getMusicState,
+  )
   return (
     <div className={styles.radio}>
       <div className={styles.panel} hidden={!open} aria-hidden={!open}>
@@ -67,26 +93,48 @@ export function Radio({
         {error ? (
           <p className={styles.error}>song unavailable</p>
         ) : (
-          <div className={styles.controls}>
-            <button
-              type="button"
-              className={styles.play}
-              onClick={toggleMusic}
-              aria-label={playing ? 'pause' : 'play'}
-            >
-              <PlayIcon playing={playing} />
-            </button>
-            <input
-              type="range"
-              className={styles.volume}
-              min={0}
-              max={1}
-              step={0.05}
-              value={volume}
-              onChange={(e) => setMusicVolume(Number(e.target.value))}
-              aria-label="volume"
-            />
-          </div>
+          <>
+            <div className={styles.controls}>
+              <button
+                type="button"
+                className={styles.play}
+                onClick={toggleMusic}
+                aria-label={playing ? 'pause' : 'play'}
+              >
+                <PlayIcon playing={playing} />
+              </button>
+              <input
+                type="range"
+                className={styles.seek}
+                min={0}
+                max={duration}
+                step={1}
+                value={Math.min(currentTime, duration)}
+                disabled={!duration}
+                onChange={(e) => seekMusic(Number(e.target.value))}
+                aria-label="seek"
+                aria-valuetext={`${formatTime(currentTime)} of ${formatTime(duration)}`}
+              />
+            </div>
+            <div className={styles.meta}>
+              <span className={styles.time}>
+                {formatTime(currentTime)} / {formatTime(duration)}
+              </span>
+              <label className={styles.volumeRow}>
+                <SpeakerIcon />
+                <input
+                  type="range"
+                  className={styles.volume}
+                  min={0}
+                  max={1}
+                  step={0.05}
+                  value={volume}
+                  onChange={(e) => setMusicVolume(Number(e.target.value))}
+                  aria-label="volume"
+                />
+              </label>
+            </div>
+          </>
         )}
       </div>
       <button

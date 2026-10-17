@@ -12,9 +12,21 @@ export interface MusicState {
   playing: boolean
   volume: number
   error: boolean
+  /** Seconds into the song. */
+  currentTime: number
+  /** Song length in seconds; 0 until the file's metadata has loaded. */
+  duration: number
 }
 
-const INITIAL: MusicState = { playing: false, volume: MUSIC_DEFAULT_VOLUME, error: false }
+const INITIAL: MusicState = {
+  playing: false,
+  volume: MUSIC_DEFAULT_VOLUME,
+  error: false,
+  currentTime: 0,
+  duration: 0,
+}
+
+const finite = (n: number) => (Number.isFinite(n) ? n : 0)
 
 let audio: HTMLAudioElement | null = null
 let state: MusicState = INITIAL
@@ -35,6 +47,10 @@ export function getAudio(): HTMLAudioElement {
     a.addEventListener('play', () => update({ playing: true, error: false }))
     a.addEventListener('pause', () => update({ playing: false }))
     a.addEventListener('error', () => update({ playing: false, error: true }))
+    const syncLength = () => update({ duration: finite(a.duration) })
+    a.addEventListener('loadedmetadata', syncLength)
+    a.addEventListener('durationchange', syncLength)
+    a.addEventListener('timeupdate', () => update({ currentTime: finite(a.currentTime) }))
     audio = a
   }
   return audio
@@ -50,6 +66,20 @@ export function playMusic(): Promise<void> {
 export function toggleMusic() {
   if (state.playing) getAudio().pause()
   else void playMusic()
+}
+
+/** Jump to a point in the song (seconds), kept within the song's length. */
+export function seekMusic(seconds: number) {
+  const a = getAudio()
+  const t = Math.min(state.duration || 0, Math.max(0, seconds))
+  a.currentTime = t
+  update({ currentTime: t })
+}
+
+/** 83.9 -> "1:23" */
+export function formatTime(seconds: number): string {
+  const s = Math.floor(finite(seconds))
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 }
 
 export function setMusicVolume(v: number) {

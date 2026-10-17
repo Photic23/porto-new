@@ -65,11 +65,35 @@
 }
 .play:hover,
 .play:focus-visible { background: var(--pink-2); outline: none; }
-.volume {
+.seek {
   flex: 1;
   min-width: 0;
   height: 44px;
   accent-color: var(--pink-1);
+  cursor: pointer;
+}
+.seek:disabled { cursor: default; opacity: 0.5; }
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.time {
+  font-family: var(--font-body);
+  font-size: 18px;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.volumeRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.volume {
+  width: 88px;
+  height: 36px;
+  accent-color: var(--ink);
   cursor: pointer;
 }
 .error {
