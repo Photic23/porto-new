@@ -3,6 +3,7 @@ import { content } from '@/content/content'
 import { SECTIONS, sectionEntries } from '@/content/sections'
 import { EntryList } from './SectionPage'
 import { Radio } from './Radio'
+import { Socials } from './Socials'
 import styles from './fallback.module.css'
 
 export function FallbackPage({ radioOpen = false }: { radioOpen?: boolean }) {
@@ -24,6 +25,7 @@ export function FallbackPage({ radioOpen = false }: { radioOpen?: boolean }) {
           </section>
         ))}
       </div>
+      <Socials />
       <Radio key={radioOpen ? 'on' : 'off'} initialOpen={radioOpen} autoPlay={radioOpen} />
     </main>
   )

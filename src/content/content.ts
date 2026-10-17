@@ -128,5 +128,9 @@ export const content: Content = {
       description: 'Improved the existing performance measurement system in Excel for better efficiency and accuracy.',
     },
   ],
+  socials: [
+    // TODO(kyse): replace with your TikTok profile link
+    { platform: 'tiktok', label: 'TikTok', url: 'https://www.tiktok.com/@your-handle' },
+  ],
   spotifyTrackUrl: 'https://open.spotify.com/album/6fZfS2mCLxlXt4MVSedvXj',
 }

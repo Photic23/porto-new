@@ -11,6 +11,7 @@ import { Menu } from '@/ui/Menu'
 import { PressStart } from '@/ui/PressStart'
 import { Radio } from '@/ui/Radio'
 import { SectionPage } from '@/ui/SectionPage'
+import { Socials } from '@/ui/Socials'
 import { TitleOverlay } from '@/ui/TitleOverlay'
 import styles from '@/ui/ui.module.css'
 
@@ -93,6 +94,7 @@ export function Experience() {
       />
       <div style={{ height: spacer }} aria-hidden="true" />
       <TitleOverlay progress={progress} prompt={started} />
+      <Socials />
       {atMenu && !explored && <div className={styles.bookHint}>▲ pick a photo on the notebook ▲</div>}
       <Menu
         state={state}

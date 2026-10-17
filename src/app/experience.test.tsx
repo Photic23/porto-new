@@ -275,4 +275,14 @@ describe('Experience', () => {
       expect(hint()).toBeNull()
     })
   })
+
+  it('shows the social links on the 3D page and the fallback page', async () => {
+    const { unmount } = render(<Experience />)
+    await screen.findByTestId('scene')
+    expect(screen.getByRole('link', { name: /tiktok/i })).toBeTruthy()
+    unmount()
+    hasWebGL.mockReturnValue(false)
+    render(<Experience />)
+    expect(await screen.findByRole('link', { name: /tiktok/i })).toBeTruthy()
+  })
 })

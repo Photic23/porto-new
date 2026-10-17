@@ -9,6 +9,12 @@ export interface Entry {
   certificate?: string
 }
 
+export interface Social {
+  platform: 'tiktok'
+  label: string
+  url: string
+}
+
 export interface Content {
   name: string
   tagline: string
@@ -18,5 +24,6 @@ export interface Content {
   organization: Entry[]
   projects: Entry[]
   achievement: Entry[]
+  socials: Social[]
   spotifyTrackUrl: string
 }

@@ -1,0 +1,22 @@
+/* Social links pinned top-right, mirroring the radio in the bottom-right. */
+.socials {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 20;
+  display: flex;
+  gap: 8px;
+}
+.link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.25);
+}
+.link:hover,
+.link:focus-visible { background: var(--pink-2); outline: none; }
+.link:focus-visible { box-shadow: 0 0 0 3px var(--pink-1); }
