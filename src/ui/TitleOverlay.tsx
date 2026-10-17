@@ -11,7 +11,6 @@ export function TitleOverlay({ progress, prompt = true }: { progress: number; pr
           <p className={styles.subtitle}>{content.tagline}</p>
         </div>
       </div>
-      <div className={styles.hud}>♥♥♥ LV.22</div>
       {prompt && progress <= 0.1 && <div className={styles.prompt}>▼ scroll to look down ▼</div>}
     </>
   )

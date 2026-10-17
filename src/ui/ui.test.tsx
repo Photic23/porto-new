@@ -13,14 +13,13 @@ describe('TitleOverlay', () => {
     render(<TitleOverlay progress={0} />)
     expect(screen.getByText("hi, i'm kyse")).toBeInTheDocument()
     expect(screen.getByText('i write software & make little things')).toBeInTheDocument()
-    expect(screen.getByText('♥♥♥ LV.22')).toBeInTheDocument()
     expect(screen.getByText('▼ scroll to look down ▼')).toBeInTheDocument()
+    expect(screen.queryByText(/LV\./)).toBeNull() // the decorative HUD was removed
   })
-  it('fades title at progress 0.5, keeps HUD, hides prompt', () => {
+  it('fades title at progress 0.5 and hides prompt', () => {
     render(<TitleOverlay progress={0.5} />)
     const wrapper = screen.getByText("hi, i'm kyse").parentElement as HTMLElement
     expect(wrapper.style.opacity).toBe('0')
-    expect(screen.getByText('♥♥♥ LV.22')).toBeInTheDocument()
     expect(screen.queryByText('▼ scroll to look down ▼')).toBeNull()
   })
 })

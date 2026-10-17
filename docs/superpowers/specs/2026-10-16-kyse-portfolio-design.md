@@ -38,7 +38,6 @@ A working throwaway spike of the scene exists at `.superpowers/brainstorm/377-17
 ### 1. Title screen (scroll = 0)
 - Camera looks **up at the sky**: gradient blue → pale cream at the horizon, a low-poly sun, blocky low-poly clouds drifting slowly.
 - Overlay: **"hi, i'm kyse"** as a game title (Pixelify Sans, white with hard drop shadow), subtitle "i write software & make little things".
-- Small HUD top-left: `♥♥♥ LV.22` (decorative).
 - Blinking prompt bottom-centre: `▼ scroll to look down ▼`.
 - Gentle idle camera sway.
 
