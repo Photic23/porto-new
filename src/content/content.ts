@@ -131,6 +131,6 @@ export const content: Content = {
   socials: [
     { platform: 'tiktok', label: 'TikTok', url: 'https://www.tiktok.com/@0xkyse' },
   ],
-  // Put the song at public/music/mirror.mp3 (about 96-128 kbps keeps it light).
-  music: { title: 'Mirror', artist: 'Porter Robinson', src: '/music/mirror.mp3' },
+  // The song file lives in public/music/ (about 96-128 kbps keeps it light).
+  music: { title: 'Everything Goes On', artist: 'Porter Robinson', src: '/music/everything-goes-on.mp3' },
 }

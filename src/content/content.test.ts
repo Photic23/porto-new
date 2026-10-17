@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
 import { describe, it, expect } from 'vitest'
 import { content } from './content'
 import { SECTIONS, sectionEntries } from './sections'
@@ -19,8 +21,9 @@ describe('content', () => {
     expect(sectionEntries(content, 'experience')).toBe(content.experience)
     expect(sectionEntries(content, 'bio')).toEqual([])
   })
-  it('plays Mirror from a file the site hosts itself', () => {
-    expect(content.music.title).toBe('Mirror')
-    expect(content.music.src).toBe('/music/mirror.mp3')
+  it('plays a song file that actually exists in public/', () => {
+    expect(content.music.title).toBe('Everything Goes On')
+    expect(content.music.src).toMatch(/^\/music\/[\w-]+\.mp3$/)
+    expect(existsSync(join(process.cwd(), 'public', content.music.src))).toBe(true)
   })
 })
