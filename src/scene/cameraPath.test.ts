@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { scrollProgress, easeInOutQuad, cameraPose, CAM } from './cameraPath'
+import { fitToAspect, FIT_REF_ASPECT, FIT_MAX_PULL } from './cameraPath'
 
 describe('scrollProgress', () => {
   it('clamps and normalizes', () => {
@@ -37,5 +38,32 @@ describe('cameraPose', () => {
     const p = cameraPose(0)
     p.position[0] = 99
     expect(CAM.start.position[0]).toBe(0)
+  })
+})
+
+describe('fitToAspect', () => {
+  const pos: [number, number, number] = [0, 7.5, 1.5]
+  const look: [number, number, number] = [0, 0, -6]
+  const dist = (a: number[], b: number[]) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2])
+
+  it('leaves wide screens alone', () => {
+    expect(fitToAspect(pos, look, FIT_REF_ASPECT, 1)).toEqual(pos)
+    expect(fitToAspect(pos, look, 2.4, 1)).toEqual(pos)
+  })
+  it('pulls back along the view line by REF/aspect on narrow screens', () => {
+    const out = fitToAspect(pos, look, FIT_REF_ASPECT / 1.5, 1)
+    expect(dist(out, look)).toBeCloseTo(dist(pos, look) * 1.5, 5)
+    // stays on the same line: direction unchanged
+    const d0 = pos.map((v, i) => v - look[i]), d1 = out.map((v, i) => v - look[i])
+    expect(d1[1] / d1[2]).toBeCloseTo(d0[1] / d0[2], 5)
+  })
+  it('caps the pull-back', () => {
+    const out = fitToAspect(pos, look, 0.3, 1)
+    expect(dist(out, look)).toBeCloseTo(dist(pos, look) * FIT_MAX_PULL, 5)
+  })
+  it('scales with weight (0 = no change)', () => {
+    expect(fitToAspect(pos, look, 0.5, 0)).toEqual(pos)
+    const half = fitToAspect(pos, look, FIT_REF_ASPECT / 2, 0.5)
+    expect(dist(half, look)).toBeCloseTo(dist(pos, look) * 1.5, 5)
   })
 })

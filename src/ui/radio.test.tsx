@@ -89,6 +89,23 @@ describe('Radio', () => {
     expect(screen.getByRole('button', { name: 'close radio' })).toBeInTheDocument()
   })
 
+  it('collapses (but keeps the player mounted) when collapse turns on', async () => {
+    const { container, rerender } = render(<Radio initialOpen collapse={false} />)
+    await iframeIn(container)
+    rerender(<Radio initialOpen collapse />)
+    expect(screen.getByRole('button', { name: 'open radio' })).toBeInTheDocument()
+    expect(container.querySelector('iframe')).not.toBeNull()
+    // the visitor can reopen it while collapse stays on
+    fireEvent.click(screen.getByRole('button', { name: 'open radio' }))
+    expect(screen.getByRole('button', { name: 'close radio' })).toBeInTheDocument()
+  })
+
+  it('starts folded but loaded when opened with collapse already on', async () => {
+    const { container } = render(<Radio initialOpen collapse />)
+    expect(screen.getByRole('button', { name: 'open radio' })).toBeInTheDocument()
+    await iframeIn(container)
+  })
+
   describe('with the Spotify iFrame API', () => {
     function fakeApi() {
       const listeners: Record<string, () => void> = {}

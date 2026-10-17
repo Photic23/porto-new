@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
-import { cameraPose } from './cameraPath'
+import { cameraPose, fitToAspect } from './cameraPath'
 import { pixelSizeFor, tierFor, type Tier } from './sceneConfig'
 import { World } from './World'
 
@@ -16,12 +16,16 @@ interface Props {
 
 function CameraRig({ progress, focus, reducedMotion }: Omit<Props, 'onContextLost'>) {
   const camera = useThree((s) => s.camera)
+  const aspect = useThree((s) => s.size.width / s.size.height)
   const focusRef = useRef(focus)
   const look = useRef(new THREE.Vector3())
 
   useFrame((state, delta) => {
     focusRef.current += (focus - focusRef.current) * (1 - Math.exp(-delta * 6))
-    const { position, lookAt } = cameraPose(progress, focusRef.current)
+    const pose = cameraPose(progress, focusRef.current)
+    const lookAt = pose.lookAt
+    // only near the notebook: the sky shot is fine at any aspect
+    const position = fitToAspect(pose.position, lookAt, aspect, progress)
     if (!reducedMotion) {
       const t = state.clock.elapsedTime * 1000
       position[0] += Math.sin(t * 0.0004) * 0.3 * (1 - progress)

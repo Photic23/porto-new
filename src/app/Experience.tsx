@@ -101,7 +101,12 @@ export function Experience() {
           }}
         />
       )}
-      <Radio key={started ? 'on' : 'off'} initialOpen={started} autoPlay={started} />
+      <Radio
+        key={started ? 'on' : 'off'}
+        initialOpen={started}
+        autoPlay={started}
+        collapse={progress > 0.85}
+      />
       {gate}
     </>
   )

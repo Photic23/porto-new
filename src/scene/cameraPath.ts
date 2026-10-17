@@ -30,3 +30,18 @@ export function cameraPose(p: number, focus = 0): { position: Vec3; lookAt: Vec3
   const lookAt = lerp3(lerp3(CAM.start.lookAt, CAM.end.lookAt, t), CAM.focus.lookAt, f)
   return { position, lookAt }
 }
+
+// Narrow (portrait) screens see less of the scene sideways. Pull the camera back along its
+// view line so the notebook keeps roughly the width it has on a 16:10 screen.
+export const FIT_REF_ASPECT = 1.6
+export const FIT_MAX_PULL = 2.2
+
+export function fitToAspect(position: Vec3, lookAt: Vec3, aspect: number, weight: number): Vec3 {
+  const pull = Math.min(FIT_MAX_PULL, Math.max(1, FIT_REF_ASPECT / aspect))
+  const k = 1 + (pull - 1) * Math.min(1, Math.max(0, weight))
+  return [
+    lookAt[0] + (position[0] - lookAt[0]) * k,
+    lookAt[1] + (position[1] - lookAt[1]) * k,
+    lookAt[2] + (position[2] - lookAt[2]) * k,
+  ]
+}

@@ -25,12 +25,21 @@ const EMBED_TITLE = 'Get Your Wish — Porter Robinson on Spotify'
 export function Radio({
   initialOpen = false,
   autoPlay = false,
+  collapse = false,
 }: {
   initialOpen?: boolean
   /** Ask Spotify's player to start as soon as it is ready (used right after "press start"). */
   autoPlay?: boolean
+  /** When this turns on, fold the panel away (the player keeps playing). */
+  collapse?: boolean
 }) {
-  const [open, setOpen] = useState(initialOpen)
+  // Already at the menu (e.g. reloaded at the bottom): load the player but keep it folded.
+  const [open, setOpen] = useState(initialOpen && !collapse)
+  const [prevCollapse, setPrevCollapse] = useState(collapse)
+  if (collapse !== prevCollapse) {
+    setPrevCollapse(collapse)
+    if (collapse) setOpen(false)
+  }
   const [mounted, setMounted] = useState(initialOpen)
   const [plain, setPlain] = useState(false) // API unavailable: use the plain embed
   const host = useRef<HTMLDivElement>(null)

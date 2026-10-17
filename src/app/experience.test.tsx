@@ -200,5 +200,16 @@ describe('Experience', () => {
       await waitFor(() => expect(container.querySelector('iframe')).not.toBeNull())
       expect(document.documentElement.style.overflow).not.toBe('hidden')
     })
+  
+    it('collapses the radio when the menu appears', async () => {
+      render(<Experience />)
+      await screen.findByTestId('scene')
+      await start()
+      expect(screen.getByRole('button', { name: 'close radio' })).toBeTruthy()
+      setScroll(2400)
+      fireEvent.scroll(window)
+      await waitFor(() => expect(screen.getByRole('navigation')).toBeTruthy())
+      expect(screen.getByRole('button', { name: 'open radio' })).toBeTruthy()
+    })
   })
 })

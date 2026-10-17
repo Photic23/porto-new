@@ -239,9 +239,11 @@ const POLAROIDS: { pos: [number, number, number]; rot: number; color: string }[]
 
 const Notebook = memo(function Notebook() {
   return (
-    <group position={NOTEBOOK_POS} rotation={[0, -0.15, 0]}>
+    // Faces the camera square-on so both pages read the same size; pages tilt up
+    // from the spine (like a real open book) so their outer edges stay above the grass.
+    <group position={NOTEBOOK_POS}>
       {[-1, 1].map((side) => (
-        <group key={side} rotation={[0, 0, -side * 0.08]}>
+        <group key={side} rotation={[0, 0, side * 0.06]}>
           <mesh position={[side * 1.5, 0, 0]}>
             <boxGeometry args={[3, 0.08, 4]} />
             <meshLambertMaterial color="#e8828f" flatShading />
@@ -250,18 +252,19 @@ const Notebook = memo(function Notebook() {
             <boxGeometry args={[2.85, 0.14, 3.85]} />
             <meshLambertMaterial color="#fbf7ee" />
           </mesh>
-        </group>
-      ))}
-      {POLAROIDS.map((p, i) => (
-        <group key={i} position={p.pos} rotation={[0, p.rot, 0]}>
-          <mesh>
-            <boxGeometry args={[0.9, 0.03, 1.05]} />
-            <meshLambertMaterial color="#ffffff" />
-          </mesh>
-          <mesh position={[0, 0.005, -0.1]}>
-            <boxGeometry args={[0.75, 0.035, 0.7]} />
-            <meshLambertMaterial color={p.color} />
-          </mesh>
+          {/* polaroids ride on their page so they follow its tilt */}
+          {POLAROIDS.filter((p) => Math.sign(p.pos[0]) === side).map((p) => (
+            <group key={p.color} position={p.pos} rotation={[0, p.rot, 0]}>
+              <mesh>
+                <boxGeometry args={[0.9, 0.03, 1.05]} />
+                <meshLambertMaterial color="#ffffff" />
+              </mesh>
+              <mesh position={[0, 0.005, -0.1]}>
+                <boxGeometry args={[0.75, 0.035, 0.7]} />
+                <meshLambertMaterial color={p.color} />
+              </mesh>
+            </group>
+          ))}
         </group>
       ))}
     </group>
