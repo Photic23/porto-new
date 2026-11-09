@@ -132,5 +132,5 @@ export const content: Content = {
     { platform: 'tiktok', label: 'TikTok', url: 'https://www.tiktok.com/@0xkyse' },
   ],
   // The song file lives in public/music/ (about 96-128 kbps keeps it light).
-  music: { title: 'Everything Goes On', artist: 'Porter Robinson', src: '/music/everything-goes-on.mp3' },
+  music: { title: 'Lifelike', artist: 'Porter Robinson', src: '/music/lifelike.mp3' },
 }

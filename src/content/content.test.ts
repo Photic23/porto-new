@@ -22,7 +22,7 @@ describe('content', () => {
     expect(sectionEntries(content, 'bio')).toEqual([])
   })
   it('plays a song file that actually exists in public/', () => {
-    expect(content.music.title).toBe('Everything Goes On')
+    expect(content.music.title).toBe('Lifelike')
     expect(content.music.src).toMatch(/^\/music\/[\w-]+\.mp3$/)
     expect(existsSync(join(process.cwd(), 'public', content.music.src))).toBe(true)
   })
